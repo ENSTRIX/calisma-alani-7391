@@ -1,0 +1,4011 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KPSS Takip">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0f1f">
+<link rel="apple-touch-icon" id="app-icon">
+<link rel="manifest" id="app-manifest">
+<title>KPSS Soru Takip</title>
+<style>
+:root {
+  --bg: #0a0f1f;
+  --card: #131a30;
+  --tx: #e8ecf8;
+  --mu: #8b95b5;
+  --ac: #22e3d0;
+  --ac2: #9b6bff;
+  --bd: #222c4a;
+  --ok: #2ee59d;
+  --no: #ff5d7a;
+  --wn: #ffb020;
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3f5fb;
+    --card: #ffffff;
+    --tx: #14192e;
+    --mu: #5d678a;
+    --ac: #00a896;
+    --ac2: #6d3fe0;
+    --bd: #dde2f0;
+    --ok: #12a36b;
+    --no: #d63a58;
+    --wn: #d9820b;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f3f5fb;
+  --card: #ffffff;
+  --tx: #14192e;
+  --mu: #5d678a;
+  --ac: #00a896;
+  --ac2: #6d3fe0;
+  --bd: #dde2f0;
+  --ok: #12a36b;
+  --no: #d63a58;
+  --wn: #d9820b;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font: 16px/1.42 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.w {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 14px 14px calc(98px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Tek Satır Kompakt Mobil Üst Başlık */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-bottom: 12px;
+  min-height: 36px;
+}
+
+h1 {
+  font-size: 17px;
+  margin: 0;
+  white-space: nowrap;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(90deg, var(--ac), var(--ac2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hdr-r {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.st {
+  font-size: 12px;
+  color: var(--mu);
+}
+
+#st {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 11px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+button, select, input, textarea {
+  font: inherit;
+  color: var(--tx);
+}
+
+.tb {
+  background: none;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.tb:active {
+  transform: scale(0.98);
+}
+
+header .tb {
+  padding: 5px 8px;
+}
+
+#cl0 {
+  color: var(--mu);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#cl0 svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+}
+
+#cl0.good {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+#cl0.bad {
+  color: var(--no);
+  border-color: var(--no);
+}
+
+#cl0.busy {
+  color: var(--ac2);
+  border-color: var(--ac2);
+}
+
+/* Kartlar ve Temel Bileşenler */
+.c {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.c h2 {
+  font-size: 15px;
+  margin: 0 0 10px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.hero {
+  border-color: var(--ac);
+}
+
+.next-vid {
+  border-color: var(--ac);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--card) 92%, var(--ac)), var(--card));
+}
+
+.g {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.g b {
+  display: block;
+  font-size: 21px;
+}
+
+.g span {
+  font-size: 12px;
+  color: var(--mu);
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.no {
+  color: var(--no);
+}
+
+.ac {
+  color: var(--ac);
+}
+
+.wn {
+  color: var(--wn);
+}
+
+.bar {
+  height: 8px;
+  background: var(--bd);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.25s ease;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin: 10px 0 4px;
+}
+
+.row small {
+  color: var(--mu);
+  text-align: right;
+}
+
+.wk {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 110px;
+}
+
+.wk div {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: var(--mu);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.wk i {
+  display: block;
+  background: linear-gradient(var(--ac), var(--ac2));
+  border-radius: 6px 6px 0 0;
+  min-height: 2px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--mu);
+  margin: 10px 0 4px;
+}
+
+select, input, textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 10px 11px;
+}
+
+textarea {
+  min-height: 115px;
+  resize: vertical;
+}
+
+.n3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pv {
+  margin: 12px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+.pb {
+  width: 100%;
+  background: linear-gradient(90deg, var(--ac), var(--ac2));
+  border: 0;
+  border-radius: 12px;
+  padding: 13px;
+  font-weight: 700;
+  color: #06101f;
+  cursor: pointer;
+}
+
+.pb:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--bd);
+  font-size: 14px;
+}
+
+.li:first-child {
+  border-top: 0;
+}
+
+.li small {
+  color: var(--mu);
+  display: block;
+}
+
+/* Kompakt, Çakışmasız Silme Butonu */
+.x {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--no);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 7px;
+  min-width: 28px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.x:hover {
+  border-color: color-mix(in srgb, var(--no) 40%, transparent);
+  background: color-mix(in srgb, var(--no) 10%, transparent);
+}
+
+.dim {
+  opacity: 0.62;
+}
+
+.e {
+  color: var(--mu);
+  text-align: center;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.ctl {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 2px;
+  align-items: center;
+}
+
+.ctl select, .ctl input {
+  flex: 1;
+  padding: 9px;
+}
+
+.ctl .tb {
+  white-space: nowrap;
+}
+
+.ctl .pb {
+  flex: 2;
+}
+
+details {
+  margin: 6px 0 10px;
+  font-size: 14px;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--ac);
+}
+
+/* Konular Akordeon Başlığı - Net ve Çakışmasız */
+.dd {
+  margin: 0;
+}
+
+.ds {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--tx);
+  cursor: pointer;
+  padding: 2px 0;
+  user-select: none;
+}
+
+.ds::-webkit-details-marker {
+  display: none;
+}
+
+.ds::after {
+  content: '▾';
+  color: var(--ac);
+  font-size: 18px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.dd[open] > .ds::after {
+  transform: rotate(180deg);
+}
+
+.d-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 7px;
+  flex-shrink: 0;
+}
+
+/* Konu İçi Video Satırları */
+.vi {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 7px 0;
+  border-top: 1px solid var(--bd);
+  font-size: 14px;
+  color: var(--tx);
+}
+
+.vi input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--ac);
+  flex-shrink: 0;
+}
+
+.vi select {
+  width: auto;
+  max-width: 48%;
+  padding: 6px;
+}
+
+.vi.w span {
+  text-decoration: line-through;
+  color: var(--mu);
+}
+
+.er3 {
+  display: grid;
+  grid-template-columns: 1fr 56px 56px 56px;
+  gap: 6px;
+  align-items: center;
+  margin: 6px 0;
+}
+
+.er3 input {
+  padding: 9px 4px;
+  text-align: center;
+}
+
+.mq {
+  margin: 8px 0;
+  color: var(--mu);
+  font-size: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.chips span {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+}
+
+.hc {
+  white-space: pre-wrap;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.hb {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.rings {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.rg {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 10px 4px;
+}
+
+.rg svg {
+  width: 82px;
+  max-width: 100%;
+}
+
+.rg b {
+  display: block;
+  font-size: 12px;
+}
+
+.rg small {
+  color: var(--mu);
+  font-size: 11px;
+}
+
+.seg {
+  display: flex;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+
+.seg button {
+  flex: 1;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 4px;
+  color: var(--mu);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.seg button.on {
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #06101f;
+  font-weight: 700;
+}
+
+.clock {
+  position: relative;
+  width: 230px;
+  max-width: 100%;
+  margin: 10px auto;
+}
+
+.clock svg {
+  width: 100%;
+  display: block;
+}
+
+.clock div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock b {
+  font-size: 42px;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock small {
+  color: var(--mu);
+}
+
+.bk {
+  margin-bottom: 18px;
+}
+
+.back {
+  background: none;
+  border: 0;
+  color: var(--ac);
+  padding: 0 0 12px;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.back b {
+  color: var(--tx);
+}
+
+.gh {
+  font-size: 12px;
+  color: var(--mu);
+  margin: 14px 0 8px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.mi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-left: 4px solid var(--c1);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  color: var(--tx);
+  cursor: pointer;
+}
+
+.mi > span {
+  font-size: 24px;
+}
+
+.mi div {
+  flex: 1;
+}
+
+.mi small {
+  display: block;
+  color: var(--mu);
+}
+
+.mi em {
+  font-style: normal;
+  color: var(--c1);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.mic svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+}
+
+.dg {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.dc {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.dc small {
+  font-size: 11px;
+  color: var(--mu);
+  min-height: 14px;
+}
+
+.stk {
+  width: 70%;
+  max-width: 34px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 2px;
+}
+
+.stk i {
+  display: block;
+}
+
+.kp {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.kp div {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 10px 4px;
+  text-align: center;
+}
+
+.kp b {
+  display: block;
+  font-size: 19px;
+}
+
+.kp small {
+  color: var(--mu);
+  font-size: 11.5px;
+}
+
+.ins {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* Ünite / Konu Düzenleyici Satırları */
+.u-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0;
+  border-top: 1px solid var(--bd);
+}
+
+.u-row:first-child {
+  border-top: 0;
+}
+
+.u-idx {
+  min-width: 26px;
+  font-size: 12px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.u-ren {
+  flex: 1;
+  padding: 7px 9px;
+  font-size: 14px;
+}
+
+.u-act {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.u-act button {
+  padding: 4px 7px;
+  font-size: 12.5px;
+}
+
+/* YouTube Sıralı Video Kuyruğu Öğeleri */
+.vq-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--bd);
+}
+
+.vq-item:first-child {
+  border-top: 0;
+}
+
+.vq-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--ac);
+}
+
+.vq-item input[type="checkbox"].sel-chk {
+  accent-color: var(--no);
+}
+
+.vq-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.vq-title {
+  display: block;
+  color: var(--tx);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.vq-title:hover {
+  color: var(--ac);
+}
+
+.vq-item.w .vq-title {
+  text-decoration: line-through;
+  color: var(--mu);
+}
+
+.vq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--mu);
+}
+
+.vq-tag {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.vq-tag.today {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.vq-sel {
+  width: auto;
+  max-width: 100%;
+  padding: 4px 7px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+
+.danger-btn {
+  border-color: color-mix(in srgb, var(--no) 55%, var(--bd));
+  color: var(--no);
+}
+
+/* Sabit Alt Navigasyon Çubuğu */
+#nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: 760px;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 30;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+}
+
+#nav button {
+  background: none;
+  border: 0;
+  border-top: 3px solid transparent;
+  border-radius: 0;
+  margin-top: -1px;
+  padding: 9px 0 8px;
+  font-size: 12px;
+  color: var(--mu);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#nav button.on {
+  color: var(--tx);
+  font-weight: 700;
+  border-image: linear-gradient(90deg, var(--ac), var(--ac2)) 1;
+}
+
+#nav svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#nav button.on svg {
+  stroke: var(--ac);
+}
+</style>
+</head>
+<body>
+<div class="w">
+  <header>
+    <h1>
+      <svg width="26" height="26" viewBox="0 0 32 32" style="flex-shrink:0">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#22e3d0"/>
+            <stop offset="1" stop-color="#9b6bff"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="12" fill="none" stroke="#26304f" stroke-width="4"/>
+        <path d="M16 4A12 12 0 1 1 4.6 12.3" fill="none" stroke="url(#lg)" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="3" fill="url(#lg)"/>
+      </svg>
+      KPSS Soru Takip
+    </h1>
+    <div class="hdr-r">
+      <span class="st" id="st">Hazır</span>
+      <button class="tb" id="cl0" title="Bulut senkronu ve tam ekran kurulum">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17.5 18z"/>
+        </svg>
+      </button>
+      <button class="tb" id="th" title="Tema değiştir">◐</button>
+    </div>
+  </header>
+  <nav id="nav"></nav>
+  <main id="v"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ==========================================================================
+     1. GÜVENLİ DEPOLAMA VE TEMEL YARDIMCILAR
+     ========================================================================== */
+  const MEM_STORE = {};
+
+  function lsGet(k) {
+    try {
+      const val = window.localStorage.getItem(k);
+      return val !== null ? val : (k in MEM_STORE ? MEM_STORE[k] : "");
+    } catch (e) {
+      return k in MEM_STORE ? MEM_STORE[k] : "";
+    }
+  }
+
+  function lsSet(k, v) {
+    if (v === null || v === undefined) {
+      delete MEM_STORE[k];
+      try {
+        window.localStorage.removeItem(k);
+      } catch (e) {}
+    } else {
+      const s = String(v);
+      MEM_STORE[k] = s;
+      try {
+        window.localStorage.setItem(k, s);
+      } catch (e) {}
+    }
+  }
+
+  const $ = s => document.querySelector(s);
+  const pad = n => String(n).padStart(2, "0");
+  const ds = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const dAgo = n => ds(new Date(Date.now() - n * 864e5));
+  const dm = d => (d && d.length >= 10) ? (d.slice(8, 10) + "." + d.slice(5, 7)) : "";
+  const f = n => Number((Number(n) || 0).toFixed(2));
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const srt = a => [...(a || [])].sort((x, y) => String(x.date || "").localeCompare(String(y.date || "")) || String(x.id || "").localeCompare(String(y.id || "")));
+
+  const sum = a => (a || []).reduce((r, l) => ({ d: r.d + (l.d || 0), y: r.y + (l.y || 0), b: r.b + (l.b || 0) }), { d: 0, y: 0, b: 0 });
+  const tot = s => s.d + s.y + s.b;
+  const net = s => s.d - s.y / 4;
+  const pct = s => tot(s) ? Math.max(0, Math.min(100, net(s) / tot(s) * 100)) : 0;
+  const col = p => p >= 70 ? "var(--ok)" : p >= 40 ? "var(--ac2)" : "var(--no)";
+
+  function keep(fn) {
+    const y = window.scrollY;
+    fn();
+    render();
+    window.scrollTo(0, y);
+  }
+
+  /* ==========================================================================
+     2. GENİŞLETİLMİŞ KPSS MÜFREDATI VE ANAHTAR KELİMELER
+     ========================================================================== */
+  const DEFAULT_DERS = {
+    "Türkçe": [
+      "Sözcükte Anlam",
+      "Deyimler ve Atasözleri",
+      "Cümlede Anlam",
+      "Paragrafta Anlam ve Yapı",
+      "Paragrafta Yardımcı Düşünceler",
+      "Ses Bilgisi",
+      "Sözcükte Yapı ve Ekler",
+      "İsimler ve Sıfatlar",
+      "Zamirler ve Zarflar",
+      "Edat - Bağlaç - Ünlem",
+      "Fiiller ve Fiilimsiler",
+      "Cümlenin Ögeleri ve Türleri",
+      "Yazım Kuralları ve Noktalama",
+      "Anlatım Bozuklukları ve Sözel Mantık"
+    ],
+    "Matematik": [
+      "Temel Bilgiler ve İşlem Yeteneği",
+      "Temel Kavramlar",
+      "Basamak Kavramı ve Çözümleme",
+      "Bölme ve Bölünebilme",
+      "Asal Çarpanlara Ayırma - EBOB EKOK",
+      "Rasyonel Sayılar",
+      "I. Dereceden Denklemler",
+      "Basit Eşitsizlikler",
+      "Mutlak Değer",
+      "Üslü Sayılar",
+      "Köklü Sayılar",
+      "Çarpanlara Ayırma",
+      "Oran – Orantı",
+      "Sayı - Kesir Problemleri",
+      "Yaş Problemleri",
+      "İşçi Problemleri",
+      "Hareket Problemleri",
+      "Yüzde - Kar Zarar Problemleri",
+      "Karışım Problemleri",
+      "Grafik ve Tablo Yorumlama",
+      "Mantıksal Muhakeme",
+      "Kümeler",
+      "Fonksiyon",
+      "İşlem ve Modüler Aritmetik",
+      "Permütasyon - Kombinasyon - Olasılık",
+      "Açılar ve Üçgenler",
+      "Çokgenler ve Dörtgenler",
+      "Çember ve Daire",
+      "Analitik Geometri"
+    ],
+    "Tarih": [
+      "İslamiyet Öncesi Türk Tarihi",
+      "İlk Türk-İslam Devletleri",
+      "Türkiye Selçuklu ve Beylikler Dönemi",
+      "Osmanlı Kuruluş Dönemi",
+      "Osmanlı Yükselme Dönemi",
+      "Osmanlı Kültür ve Medeniyeti",
+      "Osmanlı Duraklama Dönemi (XVII. yy)",
+      "Osmanlı Gerileme Dönemi (XVIII. yy)",
+      "Osmanlı Dağılma Dönemi (XIX. yy)",
+      "XX. Yüzyıl Başlarında Osmanlı ve I. Dünya Savaşı",
+      "Kurtuluş Savaşı Hazırlık Dönemi",
+      "I. TBMM ve Kurtuluş Savaşı Muharebeler Dönemi",
+      "Atatürk İlkeleri",
+      "Atatürk İnkılapları",
+      "Atatürk Dönemi Türk Dış Politikası ve Çağdaş Türk-Dünya Tarihi"
+    ],
+    "Coğrafya": [
+      "Türkiye'nin Coğrafi Konumu",
+      "Türkiye'nin Yer Şekilleri ve İç Kuvvetler",
+      "Türkiye'de Dış Kuvvetler - Akarsular ve Göller",
+      "Türkiye'nin İklimi ve Bitki Örtüsü",
+      "Türkiye'de Toprak Tipleri ve Doğal Afetler",
+      "Türkiye'de Nüfus ve Yerleşme",
+      "Türkiye'de Tarım",
+      "Türkiye'de Hayvancılık ve Ormancılık",
+      "Türkiye'de Madenler ve Enerji Kaynakları",
+      "Türkiye'de Sanayi ve Ticaret",
+      "Türkiye'de Ulaşım ve Turizm",
+      "Türkiye'nin Coğrafi Bölgeleri ve Bölgesel Kalkınma Projeleri"
+    ],
+    "Vatandaşlık": [
+      "Hukukun Temel Kavramları",
+      "Devlet Biçimleri ve Demokrasi",
+      "Anayasa Hukukuna Giriş ve Türk Anayasa Tarihi",
+      "1982 Anayasası'nın Temel İlkeleri",
+      "Temel Hak ve Hürriyetler",
+      "Yasama",
+      "Yürütme",
+      "Yargı",
+      "İdare Hukukunun Esasları",
+      "Merkezi ve Yerinden Yönetim Kuruluşları",
+      "Uluslararası Kuruluşlar"
+    ],
+    "Güncel Bilgiler": [
+      "Güncel Olaylar ve Gelişmeler",
+      "Kültür - Sanat ve Edebiyat",
+      "Bilim - Teknoloji ve Uzay",
+      "Ekonomi ve Spor"
+    ]
+  };
+
+  function cloneDers(src) {
+    const out = {};
+    for (const k in src) out[k] = [...src[k]];
+    return out;
+  }
+
+  let DERS = cloneDers(DEFAULT_DERS);
+
+  const DT = {
+    "Türkçe": 30,
+    "Matematik": 30,
+    "Tarih": 27,
+    "Coğrafya": 18,
+    "Vatandaşlık": 9,
+    "Güncel Bilgiler": 6
+  };
+
+  const PALETTE = ["#ff4d8d", "#ffb020", "#9b6bff", "#2ee59d", "#4da3ff", "#ff7ad9", "#22e3d0", "#ff8a4c"];
+  const DC_MAP = {
+    "Türkçe": "#ff4d8d",
+    "Matematik": "#ffb020",
+    "Tarih": "#9b6bff",
+    "Coğrafya": "#2ee59d",
+    "Vatandaşlık": "#4da3ff",
+    "Güncel Bilgiler": "#ff7ad9"
+  };
+
+  function dColor(k, idx) {
+    if (DC_MAP[k]) return DC_MAP[k];
+    const i = typeof idx === "number" ? idx : Math.max(0, Object.keys(S.ders).indexOf(k));
+    return PALETTE[i % PALETTE.length];
+  }
+
+  const KW = {
+    "Türkçe": {
+      "Sözcükte Anlam": "sozcukte anlam,sozcuk anlam,anlam bilgisi,es anlam,zit anlam,mecaz,gercek anlam",
+      "Deyimler ve Atasözleri": "deyim,atasozu,kalip soz,ikileme",
+      "Cümlede Anlam": "cumlede anlam,cumle yorum,cumle anlam,neden sonuc,amac sonuc,kosul",
+      "Paragrafta Anlam ve Yapı": "paragraf,anlatim bicim,dusunceyi gelistirme,paragraf yapi,akis bozan,ikiye bolme,ana dusunce",
+      "Paragrafta Yardımcı Düşünceler": "yardimci dusunce,deginilmemis,cikarilamaz",
+      "Ses Bilgisi": "ses bilgisi,unlu,unsuz,ses olay,ses dusme,ses turemesi,yumusama,benzesme",
+      "Sözcükte Yapı ve Ekler": "yapi bilgisi,sozcukte yapi,govde,turetme,cekim eki,yapim eki,kok",
+      "İsimler ve Sıfatlar": "isim,adlar,tamlama,sifat,on ad",
+      "Zamirler ve Zarflar": "zamir,adil,zarf,belirtec",
+      "Edat - Bağlaç - Ünlem": "edat,baglac,unlem,ilgec",
+      "Fiiller ve Fiilimsiler": "fiil,eylem,kip,cati,eylemsi,fiilimsi,ek fiil",
+      "Cümlenin Ögeleri ve Türleri": "cumle bilgisi,cumlenin oge,ogeler,cumle tur,cumle cesit,ozne,yuklem",
+      "Yazım Kuralları ve Noktalama": "yazim,imla,noktalama,virgul,tirnak,buyuk harf",
+      "Anlatım Bozuklukları ve Sözel Mantık": "anlatim bozuk,anlam bozuk,sozel mantik,mantik,akil yurutme"
+    },
+    "Matematik": {
+      "Temel Bilgiler ve İşlem Yeteneği": "temel bilgi,islem yetenegi,dort islem",
+      "Temel Kavramlar": "temel kavram,tam sayi,dogal sayi,asal,carpan,ardisik,faktoriyel",
+      "Basamak Kavramı ve Çözümleme": "basamak,cozumleme",
+      "Bölme ve Bölünebilme": "bolme,bolunebilme,kalan",
+      "Asal Çarpanlara Ayırma - EBOB EKOK": "asal carpan,ebob,ekok,en buyuk ortak,en kucuk ortak",
+      "Rasyonel Sayılar": "rasyonel,ondalik,kesir",
+      "I. Dereceden Denklemler": "denklem,birinci derece",
+      "Basit Eşitsizlikler": "esitsizlik",
+      "Mutlak Değer": "mutlak deger",
+      "Üslü Sayılar": "uslu,ussel",
+      "Köklü Sayılar": "koklu",
+      "Çarpanlara Ayırma": "carpanlara ayirma,carpanlara",
+      "Oran – Orantı": "oran,oranti",
+      "Sayı - Kesir Problemleri": "sayi problem,kesir problem,sayi kesir",
+      "Yaş Problemleri": "yas problem,yas",
+      "İşçi Problemleri": "isci,havuz",
+      "Hareket Problemleri": "hareket,hiz",
+      "Yüzde - Kar Zarar Problemleri": "yuzde,faiz,kar zarar",
+      "Karışım Problemleri": "karisim",
+      "Grafik ve Tablo Yorumlama": "grafik,tablo,yorumlama",
+      "Mantıksal Muhakeme": "mantiksal,muhakeme,sayisal mantik",
+      "Kümeler": "kume,kartezyen",
+      "Fonksiyon": "fonksiyon",
+      "İşlem ve Modüler Aritmetik": "islem,moduler,modul",
+      "Permütasyon - Kombinasyon - Olasılık": "permutasyon,kombinasyon,olasilik,binom,sayma",
+      "Açılar ve Üçgenler": "aci,ucgen,benzerlik",
+      "Çokgenler ve Dörtgenler": "cokgen,dortgen,dikdortgen,paralelkenar,yamuk,kare",
+      "Çember ve Daire": "cember,daire",
+      "Analitik Geometri": "analitik,dogru denklemi,koordinat"
+    },
+    "Tarih": {
+      "İslamiyet Öncesi Türk Tarihi": "islamiyet oncesi,orta asya,hun,gokturk,uygur,kirgiz,avar,kok turk,kurultay",
+      "İlk Türk-İslam Devletleri": "ilk turk islam,karahanli,gazneli,selcuklu,harzemsah,turk islam",
+      "Türkiye Selçuklu ve Beylikler Dönemi": "turkiye selcuklu,anadolu selcuklu,danismend,artuklu,beylik,malazgirt",
+      "Osmanlı Kuruluş Dönemi": "kurulus donemi,osmanli kurulus,osman bey,orhan bey,murat,fetret",
+      "Osmanlı Yükselme Dönemi": "yukselme,fetih,fatih,yavuz,kanuni",
+      "Osmanlı Kültür ve Medeniyeti": "kultur ve medeniyet,kultur uygarlik,divan,timar,devsirme,ilmiye",
+      "Osmanlı Duraklama Dönemi (XVII. yy)": "duraklama,17 yuzyil,xvii,celali,koprulu",
+      "Osmanlı Gerileme Dönemi (XVIII. yy)": "gerileme,18 yuzyil,xviii,lale devri,kucuk kaynarca,karlofca",
+      "Osmanlı Dağılma Dönemi (XIX. yy)": "dagilma,19 yuzyil,xix,tanzimat,islahat,mesrutiyet,abdulhamit",
+      "XX. Yüzyıl Başlarında Osmanlı ve I. Dünya Savaşı": "20 yuzyil,xx yuzyil,trablusgarp,balkan savas,birinci dunya,mondros",
+      "Kurtuluş Savaşı Hazırlık Dönemi": "hazirlik donemi,amasya,erzurum,sivas,havza,misaki milli,temsil heyeti,kuvayi",
+      "I. TBMM ve Kurtuluş Savaşı Muharebeler Dönemi": "tbmm,muharebe,cephe,inonu,sakarya,dumlupinar,lozan,mudanya,sevr",
+      "Atatürk İlkeleri": "ilke,cumhuriyetcilik,milliyetcilik,halkcilik,devletcilik,laiklik,inkilapcilik",
+      "Atatürk İnkılapları": "inkilap,devrim,saltanat,cumhuriyetin ilani,halifelik,medeni kanun,harf",
+      "Atatürk Dönemi Türk Dış Politikası ve Çağdaş Türk-Dünya Tarihi": "dis politika,hatay,montro,bogazlar,cagdas,soguk savas,ikinci dunya,cok partili"
+    },
+    "Coğrafya": {
+      "Türkiye'nin Coğrafi Konumu": "konum,matematik konum,ozel konum,koordinat,enlem,boylam",
+      "Türkiye'nin Yer Şekilleri ve İç Kuvvetler": "yer sekil,ic kuvvet,dag,ova,plato,jeoloji,volkan",
+      "Türkiye'de Dış Kuvvetler - Akarsular ve Göller": "dis kuvvet,akarsu,gol,karstik,buzul,dalga",
+      "Türkiye'nin İklimi ve Bitki Örtüsü": "iklim,sicaklik,basinc,ruzgar,yagis,nem,bitki ortusu,maki",
+      "Türkiye'de Toprak Tipleri ve Doğal Afetler": "toprak,dogal afet,deprem,heyelan,sel,cig,erozyon",
+      "Türkiye'de Nüfus ve Yerleşme": "nufus,yerlesme,goc,sehir,kirsal",
+      "Türkiye'de Tarım": "tarim,bugday,cay,findik,pamuk,zeytin",
+      "Türkiye'de Hayvancılık ve Ormancılık": "hayvancilik,orman,balikcilik,aricilik",
+      "Türkiye'de Madenler ve Enerji Kaynakları": "maden,enerji,demir,bakir,bor,krom,petrol,dogalgaz,komur",
+      "Türkiye'de Sanayi ve Ticaret": "sanayi,ticaret,ihracat,ithalat,fabrika",
+      "Türkiye'de Ulaşım ve Turizm": "ulasim,turizm,demiryolu,karayolu,liman,unesco",
+      "Türkiye'nin Coğrafi Bölgeleri ve Bölgesel Kalkınma Projeleri": "bolge,marmara,ege,akdeniz,karadeniz,ic anadolu,dogu anadolu,guneydogu,kalkinma proje,gap,kop,dap"
+    },
+    "Vatandaşlık": {
+      "Hukukun Temel Kavramları": "hukukun temel,temel hukuk,hukuk kurallar,yaptirim,hak,ehliyet,borclar,medeni",
+      "Devlet Biçimleri ve Demokrasi": "devlet,egemenlik,demokrasi,hukumet sistem,parlamenter,baskanlik",
+      "Anayasa Hukukuna Giriş ve Türk Anayasa Tarihi": "anayasa genel,anayasa tarihi,1921,1924,1961,kanuni esasi",
+      "1982 Anayasası'nın Temel İlkeleri": "1982,temel ilkeler,baslangic,cumhuriyetin nitelik",
+      "Temel Hak ve Hürriyetler": "temel hak,hak ve ozgurluk,hurriyet,kisi hak,sosyal hak,siyasi hak",
+      "Yasama": "yasama,tbmm,milletvekili,kanun,secim",
+      "Yürütme": "yurutme,cumhurbaskan,bakanlar,kararname,olaganustu",
+      "Yargı": "yargi,mahkeme,anayasa mahkemesi,yargitay,danistay,hsk,hakim",
+      "İdare Hukukunun Esasları": "idare hukuku,idare,kamu,memur",
+      "Merkezi ve Yerinden Yönetim Kuruluşları": "merkezi,yerinden,yerel,mahalli,belediye,il ozel,kaymakam,vali",
+      "Uluslararası Kuruluşlar": "uluslararasi,bm,nato,ab,avrupa birligi,kuruluslar,oecd"
+    },
+    "Güncel Bilgiler": {
+      "Güncel Olaylar ve Gelişmeler": "guncel,olay,haber,gundem",
+      "Kültür - Sanat ve Edebiyat": "kultur,sanat,edebiyat,muze,festival",
+      "Bilim - Teknoloji ve Uzay": "bilim,teknoloji,uzay,yapay zeka",
+      "Ekonomi ve Spor": "ekonomi,spor,olimpiyat,turnuva"
+    }
+  };
+
+  /* ==========================================================================
+     3. AKILLI KPSS VİDEO BAŞLIK TEMİZLEYİCİ (TÜM DERSLER İÇİN)
+     ========================================================================== */
+  const ROMAN_MAP = {
+    "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5,
+    "VI": 6, "VII": 7, "VIII": 8, "IX": 9, "X": 10,
+    "XI": 11, "XII": 12
+  };
+
+  const INSTRUCTOR_PATTERNS = [
+    "ramazan yetgin", "ilyas güneş", "ilyas gunes", "kadir gümüş", "kadir gumus",
+    "bayram meral", "engin eraydın", "engin eraydin", "esra özkan karaoğlu",
+    "emrah vahap özkaraca", "aydın yüce", "aydin yuce", "celal hoca",
+    "celal özyıldız", "rüştü hoca", "rustu hoca", "mehmet eğit", "mehmet egit",
+    "öznur saat yıldırım", "aker kartal", "yunus hoca", "benim hocam",
+    "hocawebde", "hoca webde", "pegem", "yargı", "yargi", "isem", "yediiklim",
+    "indeks akademi", "kr akademi", "metin şar", "coğrafyanın kodları",
+    "bıyıklı matematik", "rehber matematik", "mert hoca"
+  ];
+
+  function cleanVideoTitle(raw) {
+    let t = String(raw || "").trim();
+    if (!t) return "";
+
+    // Tire karakterlerini normalize et ve fazla boşlukları tek boşluğa indir
+    t = t.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+
+    // 1) Baştaki tekrar eden sıra numaralarını temizle (1982, 1921 gibi yıllara dokunmaz)
+    for (let pass = 0; pass < 4; pass++) {
+      const m = t.match(/^\s*#?(\d{1,3})\s*[.):\-\]]\s*(.+)$/);
+      if (m && +m[1] < 300) {
+        t = m[2].trim();
+      } else {
+        break;
+      }
+    }
+
+    // 2) Baştaki sınav ve ders ön eklerini temizle ("KPSS / AGS Tarih - ", "2026 KPSS Türkçe - " vb.)
+    for (let pass = 0; pass < 3; pass++) {
+      const before = t;
+      t = t.replace(/^(?:\[[^\]]+\]\s*|\([^)]*(?:KPSS|AGS|20\d{2})[^)]*\)\s*)/i, "").trim();
+      t = t.replace(/^(?:20\d{2}\s*)?(?:KPSS|AGS|ÖABT|TYT|AYT|DGS|ALES|MSÜ)(?:\s*[\/\-&,]\s*(?:KPSS|AGS|ÖABT|TYT|AYT|DGS|ALES|MSÜ))*\s*(?:[-:|]\s*)?/i, "").trim();
+      t = t.replace(/^(?:Genel\s+Kültür|Genel\s+Yetenek|GK\s*-?\s*GY)\s*(?:[-:|]\s*)?/i, "").trim();
+      t = t.replace(/^(?:Tarih|Türkçe|Matematik|Geometri|Coğrafya|Vatandaşlık|Güncel\s+Bilgiler|Eğitim\s+Bilimleri)\s*(?:Ders(?:i|leri)?|Konu\s+Anlatımı|Soru\s+Çözümü|Genel\s+Tekrar)?\s*[-:|]\s*/i, "").trim();
+      if (t === before) break;
+    }
+
+    // 3) Sondaki yıl, sınav etiketi, hoca adı ve kanal adlarını temizle
+    for (let pass = 0; pass < 5; pass++) {
+      const before = t;
+      // Parantez/köşeli parantez içinde yıl veya sınav bilgisi: (2026), [KPSS 2026]
+      t = t.replace(/\s*[\(\[]\s*(?:20\d{2}|KPSS|AGS|Yeni|Güncel|PDF)[^\)\]]*[\)\]]\s*$/i, "").trim();
+      // Sondaki yıl: "- 2026", "-2026", "| 2026"
+      t = t.replace(/\s*(?:[-|]\s*)?20\d{2}\s*$/, "").trim();
+      // Sondaki "Konu Anlatımı", "Soru Çözümü", "Genel Tekrar" kalıpları
+      t = t.replace(/\s*[-|]\s*(?:Konu\s+Anlatımı|Soru\s+Çözümü|Genel\s+Tekrar|Ders\s+Notları)\s*$/i, "").trim();
+
+      // Tire veya dik çizgi sonrası hoca / yayın adı kontrolü
+      const dashIdx = Math.max(t.lastIndexOf(" - "), t.lastIndexOf(" | "), t.lastIndexOf(" -"));
+      if (dashIdx > 3) {
+        const tail = t.slice(dashIdx).replace(/^[\s\-|]+/, "").trim();
+        const tailLower = tail.toLocaleLowerCase("tr");
+        const isKnownInstructor = INSTRUCTOR_PATTERNS.some(p => tailLower.includes(p));
+        // 2 veya 3 kelimelik Ad Soyad kalıbı (ör. "Ramazan YETGİN", "İlyas Güneş")
+        const words = tail.split(/\s+/);
+        const looksLikePersonName = words.length >= 2 && words.length <= 4 &&
+          words.every(w => /^[A-ZÇĞİÖŞÜ][a-zçğıöşüA-ZÇĞİÖŞÜ.]+$/.test(w)) &&
+          !/^(Türk|Osmanlı|Kurtuluş|İnkılap|Atatürk|Türkiye|Anayasa|Temel|İdare|Yargı|Yasama|Yürütme|Sözcükte|Cümlede|Paragrafta|Üslü|Köklü|Oran|Yüzde|Sayı|Yaş|İşçi|Hareket|Karışım|Açılar|Çokgenler|Çember|Analitik)/i.test(tail);
+
+        if (isKnownInstructor || looksLikePersonName) {
+          t = t.slice(0, dashIdx).trim();
+        }
+      }
+      if (t === before) break;
+    }
+
+    // 4) Romen rakamlarını ve bölüm numaralarını standart "(1)", "(2)" formatına çevir
+    // Örn: "(I)" -> "(1)", "(II)" -> "(2)"
+    t = t.replace(/\(\s*(I{1,3}|IV|VI{0,3}|IX|X{1,2})\s*\)\s*$/i, (_, r) => {
+      const n = ROMAN_MAP[r.toUpperCase()];
+      return n ? "(" + n + ")" : _;
+    });
+
+    // Örn: "- II", ": III", "Bölüm 2", "Part II", "Kısım 1"
+    t = t.replace(/(?:\s*[-:]\s*|\s+(?:Bölüm|Kısım|Ders|Part)\s+)(I{1,3}|IV|VI{0,3}|IX|X{1,2}|\d{1,2})\s*$/i, (_, r) => {
+      const up = r.toUpperCase();
+      const n = ROMAN_MAP[up] || (+r > 0 && +r < 50 ? +r : null);
+      return n ? " (" + n + ")" : _;
+    });
+
+    // Örn: Sonda boşlukla duran Romen rakamı: "... Kültür ve Medeniyeti II" -> "... Kültür ve Medeniyeti (2)"
+    t = t.replace(/\s+(I{1,3}|IV|VI{0,3}|IX|X{1,2})\s*$/i, (_, r) => {
+      const n = ROMAN_MAP[r.toUpperCase()];
+      return n ? " (" + n + ")" : _;
+    });
+
+    // Örn: Sonda parantezsiz tek sayı: "Osmanlı Kuruluş 1" -> "Osmanlı Kuruluş (1)"
+    t = t.replace(/\s+(\d{1,2})\s*$/, (_, d) => {
+      return (+d > 0 && +d < 50) ? " (" + d + ")" : _;
+    });
+
+    // 5) Kalan gereksiz noktalama ve boşlukları temizle
+    t = t.replace(/\s*[-:|/,]+\s*$/, "").replace(/\s+/g, " ").trim();
+    return t || raw.trim();
+  }
+
+  // Aynı seri içindeki ilk videoda "(1)" eksikse ve devamında "(2)" varsa otomatik "(1)" ekler
+  function applySeriesNumbering(items) {
+    for (let i = 0; i < items.length - 1; i++) {
+      const cur = items[i];
+      const nxt = items[i + 1];
+      const mNext = nxt.t.match(/^(.+?)\s*\(2\)$/);
+      if (mNext && !/\(\d+\)$/.test(cur.t)) {
+        const nextBase = nz(mNext[1]).trim();
+        const curBase = nz(cur.t).trim();
+        // Taban isimler aynıysa veya son 2 kelimeleri örtüşüyorsa ("Kültür ve Medeniyeti" gibi)
+        const nextTail = nextBase.split(" ").slice(-2).join(" ");
+        if (curBase === nextBase || (nextTail.length >= 6 && curBase.endsWith(nextTail))) {
+          cur.t = cur.t + " (1)";
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     4. VERİ MİGRASYONU VE UYGULAMA DURUMU
+     ========================================================================== */
+  function mig(o) {
+    const M = {
+      "Türkçe": {
+        "Söz Öbeklerinde Anlam": "Deyimler ve Atasözleri",
+        "Paragraf": "Paragrafta Anlam ve Yapı",
+        "Paragrafta Ana Düşünce": "Paragrafta Anlam ve Yapı",
+        "Paragrafta Yardımcı Düşünce": "Paragrafta Yardımcı Düşünceler",
+        "Yapı Bilgisi": "Sözcükte Yapı ve Ekler",
+        "Yapı Bilgisi ve Ekler": "Sözcükte Yapı ve Ekler",
+        "Sözcük Türleri": "İsimler ve Sıfatlar",
+        "İsimler ve Tamlamalar": "İsimler ve Sıfatlar",
+        "Sıfatlar": "İsimler ve Sıfatlar",
+        "Zamirler": "Zamirler ve Zarflar",
+        "Zarflar": "Zamirler ve Zarflar",
+        "Fiiller (Eylemler)": "Fiiller ve Fiilimsiler",
+        "Fiilimsiler (Eylemsiler) ve Ek Fiil": "Fiiller ve Fiilimsiler",
+        "Cümle Bilgisi": "Cümlenin Ögeleri ve Türleri",
+        "Yazım Kuralları": "Yazım Kuralları ve Noktalama",
+        "Noktalama": "Yazım Kuralları ve Noktalama",
+        "Noktalama İşaretleri": "Yazım Kuralları ve Noktalama",
+        "Anlatım Bozukluğu": "Anlatım Bozuklukları ve Sözel Mantık",
+        "Sözel Mantık": "Anlatım Bozuklukları ve Sözel Mantık"
+      },
+      "Matematik": {
+        "Sayı Basamakları": "Basamak Kavramı ve Çözümleme",
+        "Sayı Basamakları ve Çözümleme": "Basamak Kavramı ve Çözümleme",
+        "EBOB-EKOK": "Asal Çarpanlara Ayırma - EBOB EKOK",
+        "Asal Çarpanlara Ayırma, EBOB – EKOK": "Asal Çarpanlara Ayırma - EBOB EKOK",
+        "Denklemler": "I. Dereceden Denklemler",
+        "Oran-Orantı": "Oran – Orantı",
+        "Yüzdeler": "Yüzde - Kar Zarar Problemleri",
+        "Yüzde Problemleri": "Yüzde - Kar Zarar Problemleri",
+        "Yüzde ve Kâr-Zarar Problemleri": "Yüzde - Kar Zarar Problemleri",
+        "Permütasyon-Olasılık": "Permütasyon - Kombinasyon - Olasılık",
+        "Permütasyon - Kombinasyon – Olasılık": "Permütasyon - Kombinasyon - Olasılık",
+        "Sayısal Mantık": "Mantıksal Muhakeme",
+        "Üslü ve Köklü Sayılar": "Üslü Sayılar",
+        "Problemler": "Sayı - Kesir Problemleri",
+        "Sayı Problemleri": "Sayı - Kesir Problemleri",
+        "Kesir Problemleri": "Sayı - Kesir Problemleri",
+        "Grafik - Tablo Yorumlama": "Grafik ve Tablo Yorumlama",
+        "Kümeler ve Kartezyen Çarpım": "Kümeler",
+        "Fonksiyonlar": "Fonksiyon",
+        "İşlem - Modüler Aritmetik": "İşlem ve Modüler Aritmetik",
+        "Geometri": "Açılar ve Üçgenler",
+        "Doğruda ve Üçgende Açılar": "Açılar ve Üçgenler",
+        "Üçgenler": "Açılar ve Üçgenler"
+      },
+      "Tarih": {
+        "Osmanlı Kuruluş-Yükselme": "Osmanlı Kuruluş Dönemi",
+        "Osmanlı Devleti Kuruluş Dönemi": "Osmanlı Kuruluş Dönemi",
+        "Osmanlı Devleti Yükselme Dönemi": "Osmanlı Yükselme Dönemi",
+        "Osmanlı Kültür ve Uygarlığı": "Osmanlı Kültür ve Medeniyeti",
+        "Osmanlı Duraklama-Dağılma": "Osmanlı Dağılma Dönemi (XIX. yy)",
+        "XVII. Yüzyıl (Duraklama Dönemi)": "Osmanlı Duraklama Dönemi (XVII. yy)",
+        "XVIII. Yüzyıl (Gerileme Dönemi)": "Osmanlı Gerileme Dönemi (XVIII. yy)",
+        "XIX. Yüzyıl (Dağılma ve Islahatlar)": "Osmanlı Dağılma Dönemi (XIX. yy)",
+        "XX. Yüzyıl Başlarında Osmanlı Devleti": "XX. Yüzyıl Başlarında Osmanlı ve I. Dünya Savaşı",
+        "Kurtuluş Savaşı": "I. TBMM ve Kurtuluş Savaşı Muharebeler Dönemi",
+        "Kurtuluş Savaşı Muharebeler ve Antlaşmalar": "I. TBMM ve Kurtuluş Savaşı Muharebeler Dönemi",
+        "İnkılaplar": "Atatürk İnkılapları",
+        "Çağdaş Türk ve Dünya": "Atatürk Dönemi Türk Dış Politikası ve Çağdaş Türk-Dünya Tarihi",
+        "Çağdaş Türk ve Dünya Tarihi": "Atatürk Dönemi Türk Dış Politikası ve Çağdaş Türk-Dünya Tarihi"
+      },
+      "Coğrafya": {
+        "Türkiye Fiziki Coğrafyası": "Türkiye'nin Coğrafi Konumu",
+        "İklim": "Türkiye'nin İklimi ve Bitki Örtüsü",
+        "Nüfus ve Yerleşme": "Türkiye'de Nüfus ve Yerleşme",
+        "Ekonomi": "Türkiye'de Tarım",
+        "Bölgeler": "Türkiye'nin Coğrafi Bölgeleri ve Bölgesel Kalkınma Projeleri",
+        "Doğal Afetler": "Türkiye'de Toprak Tipleri ve Doğal Afetler"
+      },
+      "Vatandaşlık": {
+        "Hukukun Temelleri": "Hukukun Temel Kavramları",
+        "Anayasa Genel": "Anayasa Hukukuna Giriş ve Türk Anayasa Tarihi",
+        "1982 Anayasası": "1982 Anayasası'nın Temel İlkeleri",
+        "İdare Hukuku": "İdare Hukukunun Esasları",
+        "Temel Hak ve Özgürlükler": "Temel Hak ve Hürriyetler"
+      },
+      "Güncel Bilgiler": {
+        "Güncel Olaylar": "Güncel Olaylar ve Gelişmeler",
+        "Kültür ve Sanat": "Kültür - Sanat ve Edebiyat",
+        "Bilim ve Teknoloji": "Bilim - Teknoloji ve Uzay",
+        "Ekonomi ve Spor": "Ekonomi ve Spor"
+      }
+    };
+
+    const mapTopic = (d, t) => (M[d] && M[d][t]) ? M[d][t] : t;
+    const fx = l => {
+      if (l && l.ders && l.konu) l.konu = mapTopic(l.ders, l.konu);
+    };
+    o.logs.forEach(fx);
+    o.hd.forEach(fx);
+
+    ["tp", "vd"].forEach(p => {
+      const n = {};
+      for (const k in o[p]) {
+        const i = k.indexOf("|");
+        if (i === -1) continue;
+        const d = k.slice(0, i), t = k.slice(i + 1);
+        const nt = mapTopic(d, t), nk = d + "|" + nt;
+        if (p === "vd") {
+          const items = (o[p][k] || []).map((v, idx) => ({
+            id: v.id || uid(),
+            t: v.t || "",
+            rt: v.rt || v.t || "",
+            vid: v.vid || "",
+            dur: v.dur || "",
+            pl: v.pl || "",
+            ord: typeof v.ord === "number" ? v.ord : (idx + 1),
+            w: v.w ? 1 : 0,
+            wd: v.wd || v.dt || ""
+          }));
+          n[nk] = (n[nk] || []).concat(items);
+        } else {
+          n[nk] = o[p][k];
+        }
+      }
+      o[p] = n;
+    });
+
+    if (o.ders && typeof o.ders === "object" && Object.keys(o.ders).length) {
+      const nd = {};
+      for (const d in o.ders) {
+        const seen = new Set(), arr = [];
+        (o.ders[d] || []).forEach(t => {
+          const nt = mapTopic(d, t);
+          if (nt && !seen.has(nt)) {
+            seen.add(nt);
+            arr.push(nt);
+          }
+        });
+        nd[d] = arr;
+      }
+      o.ders = nd;
+    } else {
+      o.ders = cloneDers(DEFAULT_DERS);
+    }
+
+    DERS = o.ders;
+    return o;
+  }
+
+  const norm = o => mig({
+    logs: Array.isArray(o.logs) ? o.logs : [],
+    ts: Number(o.ts) || 0,
+    ex: Array.isArray(o.ex) ? o.ex : [],
+    tp: o.tp && typeof o.tp === "object" ? o.tp : {},
+    vd: o.vd && typeof o.vd === "object" ? o.vd : {},
+    hd: Array.isArray(o.hd) ? o.hd : [],
+    fs: Array.isArray(o.fs) ? o.fs : [],
+    bk: Array.isArray(o.bk) ? o.bk : [],
+    ders: o.ders && typeof o.ders === "object" ? o.ders : null,
+    cfg: Object.assign({ goal: 95, dq: 100, date: "" }, o.cfg || {})
+  });
+
+  let S = norm({});
+  try {
+    const raw = lsGet("kpss-v1");
+    if (raw) S = norm(JSON.parse(raw));
+  } catch (e) {}
+
+  let tab = "ozet";
+  let doc = null;
+  let tmr = null;
+  let AS = null;
+
+  // Geçici arayüz durumları
+  const OP = new Set();
+  let HF = "";
+  let HO = false;
+  let CR = 7;
+  const CH = new Set();
+  let WD = "";
+  let DT2 = "genel";
+  let BK = "";
+  let EXN = null;
+  let KM = "view";
+  let ED_DERS = Object.keys(DERS)[0] || "Türkçe";
+  let VM = "url";
+  let VD_FILTER_DERS = "ALL";
+  let VD_ADD_DERS = Object.keys(DERS)[0] || "Türkçe";
+  let VF = "all";
+  let V_SELECT_MODE = false;
+  const V_SELECTED = new Set();
+  let V_EDIT_ID = "";
+  let FOCUS_DERS = "";
+
+  /* ==========================================================================
+     5. KAYIT VE BULUT SENKRONİZASYONU
+     ========================================================================== */
+  const SA = typeof claude === "undefined";
+  const GT = "kpss-gh-token", GI = "kpss-gh-gist", GS = "kpss-gh-seen", GF = "kpss-takip.json";
+  let gbusy = false, gtm = null;
+
+  function status(t) {
+    const e = $("#st");
+    if (e) e.textContent = t;
+    const b = $("#cl0");
+    if (b) {
+      b.className = "tb " + (/hata/i.test(t) ? "bad" : /✓/.test(t) ? "good" : /…/.test(t) ? "busy" : "");
+    }
+  }
+
+  function save() {
+    S.ts = Date.now();
+    try {
+      lsSet("kpss-v1", JSON.stringify(S));
+    } catch (e) {}
+    if (doc) {
+      clearTimeout(tmr);
+      tmr = setTimeout(() => doc.set(S).then(() => status("Senkron ✓")).catch(() => status("Senkron hatası")), 400);
+    }
+    if (SA && lsGet(GT)) {
+      clearTimeout(gtm);
+      gtm = setTimeout(gsync, 1500);
+    }
+  }
+
+  const ghf = (p, o = {}) => fetch("https://api.github.com" + p, Object.assign({}, o, {
+    headers: {
+      "Authorization": "Bearer " + lsGet(GT),
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
+    }
+  }));
+
+  const un = (x, y) => {
+    const m = new Map();
+    (y || []).forEach(i => m.set(i.id, i));
+    (x || []).forEach(i => m.set(i.id, i));
+    return [...m.values()];
+  };
+
+  const mg = (L, R) => ({
+    logs: un(L.logs, R.logs),
+    ex: un(L.ex, R.ex),
+    hd: un(L.hd, R.hd),
+    bk: un(L.bk, R.bk),
+    fs: un(L.fs, R.fs),
+    tp: Object.assign({}, R.tp, L.tp),
+    vd: Object.assign({}, R.vd, L.vd),
+    ders: L.ders || R.ders || cloneDers(DEFAULT_DERS),
+    cfg: L.cfg,
+    ts: Date.now()
+  });
+
+  function gst(t) {
+    const e = $("#gs");
+    if (e) e.textContent = t;
+    if (lsGet(GT)) status(t);
+  }
+
+  async function gget(id) {
+    const r = await ghf("/gists/" + id);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json(), fl = j.files && j.files[GF];
+    if (!fl) return null;
+    const txt = fl.truncated ? await (await fetch(fl.raw_url)).text() : fl.content;
+    return norm(JSON.parse(txt));
+  }
+
+  async function gid() {
+    let id = lsGet(GI);
+    if (id) return id;
+    const r = await ghf("/gists?per_page=100");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const g = (await r.json()).find(x => x.files && x.files[GF]);
+    if (g) {
+      lsSet(GI, g.id);
+      return g.id;
+    }
+    return "";
+  }
+
+  async function gsync() {
+    if (!SA || !lsGet(GT) || gbusy) return;
+    gbusy = true;
+    try {
+      gst("Senkron…");
+      const seen = +lsGet(GS) || 0, id = await gid();
+      let R = null;
+      if (id) R = await gget(id);
+      const rc = R && R.ts > seen, lc = S.ts > seen;
+      let push = false, ch = false;
+      if (rc && lc) {
+        S = norm(mg(S, R));
+        push = true;
+        ch = true;
+      } else if (rc) {
+        S = R;
+        ch = true;
+      } else if (lc || !id) {
+        push = true;
+      }
+      if (push) {
+        const r = await ghf(id ? "/gists/" + id : "/gists", {
+          method: id ? "PATCH" : "POST",
+          body: JSON.stringify({
+            description: "KPSS Soru Takip verisi",
+            public: false,
+            files: { [GF]: { content: JSON.stringify(S) } }
+          })
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!id) {
+          const j = await r.json();
+          lsSet(GI, j.id);
+        }
+      }
+      lsSet(GS, String(S.ts));
+      lsSet("kpss-v1", JSON.stringify(S));
+      gst("Senkron ✓ " + new Date().toTimeString().slice(0, 5));
+      if (ch) render();
+    } catch (e) {
+      gst("Senkron hatası: " + (e.message || e));
+    }
+    gbusy = false;
+  }
+
+  async function cloud() {
+    try {
+      if (SA) return;
+      const c = await claude.use("db"), u = await claude.use("user");
+      if (!c || !u) {
+        status("Bu cihaz");
+        return;
+      }
+      const id = await u.id();
+      if (!id) {
+        status("Bu cihaz");
+        return;
+      }
+      doc = c.collection("data/users/" + id).doc("state");
+      let first = true;
+      doc.onSnapshot(s => {
+        if (s.exists) {
+          const d = s.data();
+          if (d && d.ts > S.ts) {
+            S = norm(d);
+            lsSet("kpss-v1", JSON.stringify(S));
+            render();
+          } else if (first && d && d.ts < S.ts) {
+            doc.set(S).catch(() => {});
+          }
+        } else if (first && S.logs.length) {
+          doc.set(S).catch(() => {});
+        }
+        first = false;
+        status("Senkron ✓");
+      }, () => status("Bu cihaz"));
+    } catch (e) {
+      status("Bu cihaz");
+    }
+  }
+
+  try {
+    if (!SA) {
+      claude.use("assets").then(a => {
+        AS = a;
+        if (tab === "hata") render();
+      }).catch(() => {});
+    }
+  } catch (e) {}
+
+  /* ==========================================================================
+     6. NAVİGASYON, İKONLAR VE İKİ ADIMLI SİLME ONAYI
+     ========================================================================== */
+  const TOP = [
+    ["ozet", "Özet"],
+    ["ekle", "Ekle"],
+    ["konu", "Konular"],
+    ["odak", "Odak"],
+    ["more", "Daha"]
+  ];
+
+  const SUB = {
+    den: "Deneme",
+    banka: "Soru Bankası",
+    hata: "Hata Defteri",
+    vid: "Video Listesi",
+    kayit: "Kayıtlar",
+    sync: "Bulut & Kurulum"
+  };
+
+  const IC = {
+    ozet: "<path d='M12 4a8 8 0 1 0 8 8'/><path d='M12 12l4.5-4.5'/><circle cx='12' cy='12' r='1.2'/>",
+    ekle: "<path d='M12 3l2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4z'/>",
+    konu: "<path d='M12 4l8 4-8 4-8-4z'/><path d='M4 12l8 4 8-4'/><path d='M4 16l8 4 8-4'/>",
+    odak: "<circle cx='12' cy='13' r='7'/><path d='M12 13V9.5'/><path d='M9.5 3h5'/>",
+    more: "<rect x='4' y='4' width='6.5' height='6.5' rx='2'/><rect x='13.5' y='4' width='6.5' height='6.5' rx='2'/><rect x='4' y='13.5' width='6.5' height='6.5' rx='2'/><rect x='13.5' y='13.5' width='6.5' height='6.5' rx='2'/>",
+    den: "<path d='M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3'/>",
+    banka: "<path d='M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z'/><path d='M8 17h11'/>",
+    hata: "<rect x='5' y='3' width='14' height='18' rx='2.5'/><path d='M9.5 9.5l5 5M14.5 9.5l-5 5'/>",
+    vid: "<rect x='3' y='5' width='18' height='14' rx='4'/><path d='M10 9l5 3-5 3z'/>",
+    kayit: "<path d='M9 6h11M9 12h11M9 18h11'/><circle cx='4.5' cy='6' r='1'/><circle cx='4.5' cy='12' r='1'/><circle cx='4.5' cy='18' r='1'/>",
+    sync: "<path d='M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17.5 18z'/>"
+  };
+
+  const ic = n => "<svg viewBox='0 0 24 24'>" + (IC[n] || "") + "</svg>";
+
+  // alert() / confirm() yerine satır içi iki adımlı güvenlik onayı
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".x,.hx,.cl,.vq-del,#del-ders,#v-del-sel,#v-del-unw,#v-del-all");
+    if (!b || b.dataset.arm === "1") return;
+    e.stopPropagation();
+    e.preventDefault();
+    b.dataset.arm = "1";
+    const orig = b.textContent;
+    b.textContent = "Emin misin?";
+    setTimeout(() => {
+      if (b.isConnected) {
+        b.dataset.arm = "";
+        b.textContent = orig;
+      }
+    }, 3000);
+  }, true);
+
+  function render() {
+    const act = SUB[tab] ? "more" : tab;
+    $("#nav").innerHTML = TOP.map(t =>
+      "<button class='" + (t[0] === act ? "on" : "") + "' data-t='" + t[0] + "'>" + ic(t[0]) + "<span>" + t[1] + "</span></button>"
+    ).join("");
+    $("#nav").querySelectorAll("button").forEach(b => {
+      b.onclick = () => {
+        tab = b.dataset.t;
+        render();
+        window.scrollTo(0, 0);
+      };
+    });
+
+    const views = {
+      ozet: vOzet,
+      ekle: vEkle,
+      den: vDen,
+      konu: vKonu,
+      vid: vVid,
+      hata: vHata,
+      kayit: vKayit,
+      odak: vOdak,
+      banka: vBanka,
+      more: vMore,
+      sync: vSync
+    };
+    (views[tab] || vOzet)();
+
+    if (SUB[tab]) {
+      $("#v").insertAdjacentHTML("afterbegin", "<button class='back' id='bk0'>← Daha · <b>" + SUB[tab] + "</b></button>");
+      $("#bk0").onclick = () => {
+        tab = "more";
+        render();
+        window.scrollTo(0, 0);
+      };
+    }
+  }
+
+  /* ==========================================================================
+     7. ÖZET EKRANI (DASHBOARD, HALKALAR, TEKRAR ZAMANI, ANALİZ VE GRAFİKLER)
+     ========================================================================== */
+  const QT = [
+    "Bugün çözdüğün her soru, sınav günü sana puan olarak döner.",
+    "Düzenli çalışmak, aralıklı yoğun çalışmadan çok daha fazla kazandırır.",
+    "Yanlışların seni geri çekmez, eksiğini gösterir.",
+    "Bugün bir konu daha bitir, yarın bir tane daha.",
+    "Hedefin tek günde değil, bugünkü düzenli çalışmayla kurulur.",
+    "Yorulduysan ara ver ama bırakma.",
+    "Küçük ilerlemeler birikir, deneme netlerin bunu gösterecek.",
+    "Hata defterin en değerli kaynağın, ona bugün bir kayıt ekle.",
+    "Odaklan, başla, gerisi gelir.",
+    "Bugünkü emeğin yarınki rahatlığın."
+  ];
+
+  const DN = ["Pz", "Pt", "Sa", "Ça", "Pe", "Cu", "Ct"];
+  const rtp = (k, t) => S.tp[k + "|" + t] || { st: 0, last: "" };
+  const wtp = (k, t) => S.tp[k + "|" + t] || (S.tp[k + "|" + t] = { st: 0, last: "" });
+  const fmin = from => S.fs.filter(x => x.date >= from).reduce((a, x) => a + (x.min || 0), 0);
+
+  function streak() {
+    const s = new Set(S.logs.map(l => l.date));
+    let n = 0, d = new Date();
+    if (!s.has(ds(d))) d.setDate(d.getDate() - 1);
+    while (s.has(ds(d))) {
+      n++;
+      d.setDate(d.getDate() - 1);
+    }
+    return n;
+  }
+
+  function cards(s) {
+    return "<div class='g'>" +
+      "<div><b>" + tot(s) + "</b><span>Çözülen</span></div>" +
+      "<div><b class='ok'>" + s.d + "</b><span>Doğru</span></div>" +
+      "<div><b class='no'>" + s.y + "</b><span>Yanlış</span></div>" +
+      "<div><b class='ac'>" + f(net(s)) + "</b><span>Net</span></div>" +
+      "</div>";
+  }
+
+  function ring(p, txt, color, lab, sub) {
+    const r = 38, c = 2 * Math.PI * r, dash = (c * Math.max(0, Math.min(100, p)) / 100);
+    return "<div class='rg'>" +
+      "<svg viewBox='0 0 92 92'>" +
+      "<circle cx='46' cy='46' r='" + r + "' fill='none' stroke-width='9' style='stroke:var(--bd)'/>" +
+      "<circle cx='46' cy='46' r='" + r + "' fill='none' stroke-width='9' stroke-linecap='round' style='stroke:" + color + "' stroke-dasharray='" + dash + " " + c + "' transform='rotate(-90 46 46)'/>" +
+      "<text x='46' y='51' text-anchor='middle' font-size='13' font-weight='700' fill='currentColor'>" + txt + "</text>" +
+      "</svg><b>" + lab + "</b><small>" + sub + "</small></div>";
+  }
+
+  function hero(td) {
+    const c = S.cfg, t0 = ds(new Date()), w0 = dAgo(6), n = tot(td), dq = c.dq || 100, st = streak();
+    const hs = S.logs.filter(l => l.date === t0).reduce((a, l) => a + (l.h || 0), 0) + fmin(t0) / 60;
+    const h7 = S.logs.filter(l => l.date >= w0).reduce((a, l) => a + (l.h || 0), 0) + fmin(w0) / 60;
+    const ex = S.ex.filter(e => e.p).sort((a, b) => a.date.localeCompare(b.date));
+    const lp = ex.length ? ex[ex.length - 1].p : 0;
+    const gp = Math.min(100, lp / (c.goal || 95) * 100);
+
+    let tt = 0, dn = 0;
+    for (const k in S.ders) {
+      (S.ders[k] || []).forEach(t => {
+        tt++;
+        if (rtp(k, t).st >= 2) dn++;
+      });
+    }
+    const pt = tt ? (dn / tt * 100) : 0;
+
+    let cd = "";
+    if (c.date) {
+      const k = Math.ceil((new Date(c.date + "T00:00:00") - new Date(t0 + "T00:00:00")) / 864e5);
+      if (k >= 0) cd = "<span>⏳ Sınava " + k + " gün</span>";
+    }
+
+    const msg = n >= dq
+      ? "Günlük hedefi tamamladın, harikasın! 🎉"
+      : n > 0
+        ? "Bugün " + n + " soru çözdün, hedefe " + (dq - n) + " soru kaldı."
+        : "Bugün henüz soru yok. İlk soruyla başla, gerisi gelir.";
+
+    const pq = Math.min(100, n / dq * 100);
+    return "<div class='c hero'>" +
+      "<h2 style='font-size:22px;color:var(--tx);margin:0 0 4px'>Merhaba Enes 👋</h2>" +
+      "<p class='mq'>" + QT[Math.floor(Date.now() / 864e5) % QT.length] + "</p>" +
+      "<div class='chips'>" +
+      "<span>🎯 Hedef " + c.goal + " puan</span>" +
+      "<span>🔥 " + st + " gün seri</span>" +
+      "<span>⏱ bugün " + f(hs) + " sa · hafta " + f(h7) + " sa</span>" +
+      "<span>📝 " + S.hd.filter(h => !h.ok).length + " hata bekliyor</span>" + cd +
+      "</div>" +
+      "<div class='rings'>" +
+      ring(pq, n + "/" + dq, "var(--ac)", "Günlük soru", "%" + Math.round(pq)) +
+      ring(gp, lp || "–", "var(--ac2)", "Hedef " + c.goal, lp ? "%" + Math.round(gp) : "puan yok") +
+      ring(pt, "%" + Math.round(pt), "#ff4d8d", "Konu ilerleme", dn + "/" + tt) +
+      "</div>" +
+      "<p class='mq' style='margin-bottom:0'>" + msg + "</p>" +
+      "</div>";
+  }
+
+  function nextVideoQuickCard() {
+    const allV = getVideos("ALL");
+    if (!allV.length) return "";
+    const nxt = allV.find(x => !x.v.w);
+    const doneCount = allV.filter(x => x.v.w).length;
+    if (!nxt) {
+      return "<div class='c'><h2>▶️ Video İlerlemesi</h2><div class='row'><span>Tüm videolar tamamlandı (" + doneCount + "/" + allV.length + ") 🎉</span><button class='tb' id='go-vid'>Listeye git</button></div></div>";
+    }
+    return "<div class='c next-vid'>" +
+      "<h2>▶️ Sıradaki Video (" + doneCount + "/" + allV.length + " izlendi)</h2>" +
+      "<div style='font-size:15px;font-weight:600;margin:4px 0'>" + esc(nxt.v.t) + "</div>" +
+      "<small class='st'>" + esc(nxt.ders) + " · " + esc(nxt.konu === "?" ? "Sınıflanmayan" : nxt.konu) + (nxt.v.dur ? " · ⏱ " + esc(nxt.v.dur) : "") + "</small>" +
+      "<div class='ctl' style='margin-top:10px'>" +
+      "<a href='" + ytWatchUrl(nxt.v) + "' target='_blank' rel='noopener' class='tb' style='text-align:center;text-decoration:none;flex:1'>İzle ↗</a>" +
+      "<button class='pb' id='oz-vid-done' style='flex:1.3;padding:9px'>Bugün İzledim ✓</button>" +
+      "<button class='tb' id='go-vid'>Tümü</button>" +
+      "</div></div>";
+  }
+
+  function reviewDueCard() {
+    const t0 = new Date(ds(new Date()) + "T00:00:00");
+    const due = [];
+    for (const k in S.ders) {
+      (S.ders[k] || []).forEach(t => {
+        const info = rtp(k, t);
+        if (info.st >= 2 && info.last) {
+          const days = Math.floor((t0 - new Date(info.last + "T00:00:00")) / 864e5);
+          if (days >= 7) due.push({ k, t, days, st: info.st });
+        }
+      });
+    }
+    due.sort((a, b) => b.days - a.days);
+    if (!due.length) return "";
+    return "<div class='c'><h2>🔁 Tekrar Zamanı Gelen Konular (7+ gün)</h2>" +
+      due.slice(0, 4).map(x =>
+        "<div class='li'><div><b>" + esc(x.t) + "</b><small>" + esc(x.k) + " · " + x.days + " gün önce çalışıldı</small></div>" +
+        "<button class='tb rev-ok' data-k='" + esc(x.k) + "' data-t='" + esc(x.t) + "' style='color:var(--ok);border-color:var(--ok)'>Tekrar Ettim ✓</button></div>"
+      ).join("") +
+      "</div>";
+  }
+
+  function wst(a, b) {
+    const from = dAgo(a), to = dAgo(b);
+    const L = S.logs.filter(l => l.date >= from && l.date <= to);
+    const s = sum(L);
+    const h = L.reduce((x, l) => x + (l.h || 0), 0) + S.fs.filter(x => x.date >= from && x.date <= to).reduce((x, y) => x + (y.min || 0), 0) / 60;
+    return { L, s, h, q: tot(s), n: net(s), days: new Set(L.map(l => l.date)).size };
+  }
+
+  function ar(c, p, up) {
+    const d = c - p;
+    if (Math.abs(d) < 0.005) return "<span class='st'>–</span>";
+    return "<span class='" + ((d > 0) === up ? "ok" : "no") + "'>" + (d > 0 ? "▲" : "▼") + " " + f(Math.abs(d)) + "</span>";
+  }
+
+  function lineCard() {
+    const N = CR, days = [];
+    for (let i = N - 1; i >= 0; i--) days.push(dAgo(i));
+    const ks = Object.keys(S.ders);
+    const ser = [["Toplam", "#22e3d0", days.map(d => tot(sum(S.logs.filter(l => l.date === d))))]];
+    ks.forEach((k, idx) => {
+      const v = days.map(d => tot(sum(S.logs.filter(l => l.date === d && l.ders === k))));
+      if (v.some(x => x)) ser.push([k, dColor(k, idx), v]);
+    });
+
+    const vis = ser.filter(s => !CH.has(s[0]));
+    const mx = Math.max(5, ...vis.flatMap(s => s[2]));
+    const W = 320, H = 150, pl = 28, pr = 8, pt = 10, pb = 22;
+    const xx = i => pl + i * (W - pl - pr) / Math.max(1, N - 1);
+    const yy = v => H - pb - v / mx * (H - pt - pb);
+
+    const grid = [0, 0.5, 1].map(g => {
+      const v = Math.round(mx * g);
+      return "<line x1='" + pl + "' x2='" + (W - pr) + "' y1='" + yy(v) + "' y2='" + yy(v) + "' style='stroke:var(--bd)'/>" +
+        "<text x='" + (pl - 4) + "' y='" + (yy(v) + 3) + "' text-anchor='end' font-size='9' style='fill:var(--mu)'>" + v + "</text>";
+    }).join("");
+
+    const xl = days.map((d, i) => (N <= 7 || i % Math.ceil(N / 7) === 0 || i === N - 1)
+      ? "<text x='" + xx(i) + "' y='" + (H - 6) + "' text-anchor='middle' font-size='9' style='fill:var(--mu)'>" + (N <= 7 ? DN[new Date(d + "T00:00:00").getDay()] : dm(d)) + "</text>"
+      : "").join("");
+
+    const lines = vis.map(s => {
+      const tt = s[0] === "Toplam";
+      const pts = s[2].map((v, i) => xx(i) + "," + yy(v)).join(" ");
+      const dots = s[2].map((v, i) => (v || tt) ? "<circle cx='" + xx(i) + "' cy='" + yy(v) + "' r='" + (tt ? 3.5 : 2.5) + "' style='fill:" + s[1] + "'/>" : "").join("");
+      const labels = (tt && N <= 14) ? s[2].map((v, i) => v ? "<text x='" + xx(i) + "' y='" + (yy(v) - 7) + "' text-anchor='middle' font-size='9' style='fill:var(--tx)'>" + v + "</text>" : "").join("") : "";
+      return "<polyline points='" + pts + "' fill='none' stroke-width='" + (tt ? 3.5 : 2) + "' stroke-linejoin='round' stroke-linecap='round' style='stroke:" + s[1] + "'/>" + dots + labels;
+    }).join("");
+
+    const tv = ser[0][2], sm = tv.reduce((a, b) => a + b, 0), bi = tv.indexOf(Math.max(...tv));
+    return "<div class='c'><h2>Günlük çözülen soru</h2>" +
+      "<div class='chips'>" + [7, 14, 30].map(n => "<button class='tb cr' data-n='" + n + "' style='" + (CR === n ? "border-color:var(--ac);color:var(--ac)" : "") + "'>" + n + " gün</button>").join("") + "</div>" +
+      "<svg viewBox='0 0 " + W + " " + H + "' style='width:100%'>" + grid + xl + lines + "</svg>" +
+      "<div class='chips'>" + ser.map(s => "<button class='tb cl2' data-s='" + esc(s[0]) + "' style='border-color:" + (CH.has(s[0]) ? "var(--bd)" : s[1]) + ";opacity:" + (CH.has(s[0]) ? 0.45 : 1) + "'><span style='color:" + s[1] + "'>●</span> " + esc(s[0]) + "</button>").join("") + "</div>" +
+      "<div class='kp'><div><b>" + sm + "</b><small>Toplam soru</small></div><div><b>" + f(sm / N) + "</b><small>Günlük ort.</small></div><div><b>" + (sm ? tv[bi] : "–") + "</b><small>" + (sm ? "En yoğun: " + dm(days[bi]) : "En yoğun") + "</small></div></div>" +
+      "</div>";
+  }
+
+  function weekHTML() {
+    const A = wst(6, 0), B = wst(13, 7), dq = S.cfg.dq || 100, ks = Object.keys(S.ders);
+    const qd = k => tot(sum(A.L.filter(l => l.ders === k)));
+    const K = WD && ks.includes(WD) ? WD : (ks.slice().sort((a, b) => qd(b) - qd(a))[0] || "Türkçe");
+    const nk = new Set(A.L.filter(l => l.konu).map(l => l.ders + "|" + l.konu)).size;
+
+    const c1 = "<div class='c'><h2>Bu hafta · genel</h2>" +
+      "<div class='chips'><span>🔥 " + A.days + " aktif gün</span><span>💪 " + A.q + " soru</span><span>⏱ " + f(A.h) + " sa</span>" + (nk ? "<span>📚 " + nk + " konu</span>" : "") + "</div>" +
+      "<div class='kp'><div><b class='ok'>" + A.s.d + "</b><small>Doğru</small></div><div><b class='no'>" + A.s.y + "</b><small>Yanlış</small></div><div><b>" + A.s.b + "</b><small>Boş</small></div><div><b class='ac'>" + f(A.n) + "</b><small>Net</small></div></div>" +
+      "<div class='row'><span>Haftalık soru hedefi</span><small>" + A.q + "/" + (dq * 7) + "</small></div>" +
+      "<div class='bar'><i style='width:" + Math.min(100, A.q / (dq * 7) * 100) + "%;background:linear-gradient(90deg,var(--ac),var(--ac2))'></i></div>" +
+      "</div>";
+
+    const a = sum(A.L.filter(l => l.ders === K)), b = sum(B.L.filter(l => l.ders === K)), hb = tot(b) > 0;
+    const R = (lb, c, p, up) => "<div class='row'><span>" + lb + "</span><small><b>" + f(c) + "</b> " + (hb ? ar(c, p, up) + " <span class='st'>geçen hafta " + f(p) + "</span>" : "") + "</small></div>";
+
+    const sel = "<div class='c'><h2>Haftalık analiz · ders seç</h2>" +
+      "<div class='chips'>" + ks.map((k, idx) => "<button class='tb wd' data-k='" + esc(k) + "' style='" + (k === K ? ("border-color:" + dColor(k, idx) + ";color:" + dColor(k, idx)) : "") + "'>" + esc(k) + " <small>" + qd(k) + "</small></button>").join("") + "</div>" +
+      (tot(a)
+        ? R("Çözülen soru", tot(a), tot(b), true) + R("Doğru", a.d, b.d, true) + R("Yanlış", a.y, b.y, false) + R("Boş", a.b, b.b, false) + R("Net", net(a), net(b), true) + R("Başarı %", pct(a), pct(b), true) + (hb ? "" : "<small class='st'>Geçen hafta bu derste soru yok, karşılaştırma yapılmadı.</small>")
+        : "<div class='e'>Bu hafta " + esc(K) + " dersinde soru yok.</div>") +
+      "</div>";
+
+    const units = S.ders[K] || [];
+    const kt = units.map(t => [t, sum(A.L.filter(l => l.ders === K && l.konu === t)), sum(B.L.filter(l => l.ders === K && l.konu === t))]).filter(z => tot(z[1])).sort((p, q) => tot(q[1]) - tot(p[1]));
+    const rest = units.filter(t => !kt.some(z => z[0] === t));
+
+    const c3 = "<div class='c'><h2>" + esc(K) + " · konulara göre</h2>" +
+      (kt.length
+        ? kt.map(z => {
+            const p = pct(z[1]);
+            return "<div class='row'><span>" + esc(z[0]) + "</span><small>" + tot(z[1]) + " soru · " + z[1].d + "D " + z[1].y + "Y " + z[1].b + "B · net " + f(net(z[1])) + " · %" + Math.round(p) + (tot(z[2]) ? " " + ar(p, pct(z[2]), true) : "") + "</small></div>" +
+              "<div class='bar'><i style='width:" + p + "%;background:" + col(p) + "'></i></div>";
+          }).join("")
+        : "<div class='e'>Bu hafta bu derste konu yok.</div>") +
+      (rest.length ? "<small class='st' style='display:block;margin-top:10px'>Bu hafta dokunulmayan: " + esc(rest.join(", ")) + "</small>" : "") +
+      "</div>";
+
+    const W4 = [3, 2, 1, 0].map(i => sum(wst(7 * i + 6, 7 * i).L.filter(l => l.ders === K)));
+    const mq = Math.max(1, ...W4.map(tot));
+    const c4 = "<div class='c'><h2>" + esc(K) + " · son 4 hafta</h2>" +
+      "<div class='dg'>" + W4.map((x, i) =>
+        "<div class='dc'><small>" + (tot(x) || "–") + "</small>" +
+        "<div class='stk' style='height:" + (tot(x) ? tot(x) / mq * 100 : 2) + "px'><i style='flex:" + x.y + ";background:var(--no)'></i><i style='flex:" + x.d + ";background:var(--ok)'></i><i style='flex:" + x.b + ";background:var(--bd)'></i></div>" +
+        "<small>" + ["3 hf önce", "2 hf önce", "Geçen hf", "Bu hafta"][i] + "</small>" +
+        "<small>" + (tot(x) ? f(net(x)) + " net" : "") + "</small>" +
+        "<small>" + (tot(x) ? "%" + Math.round(pct(x)) : "") + "</small></div>"
+      ).join("") + "</div>" +
+      "<small class='st'>■ doğru · ■ yanlış · ■ boş</small></div>";
+
+    return c1 + lineCard() + sel + c3 + c4;
+  }
+
+  function weakCard() {
+    const a = [];
+    for (const k in S.ders) {
+      (S.ders[k] || []).forEach(t => {
+        const s = sum(S.logs.filter(l => l.ders === k && l.konu === t));
+        if (tot(s) >= 10) a.push([k, t, pct(s), tot(s)]);
+      });
+    }
+    a.sort((x, y) => x[2] - y[2]);
+    return a.length
+      ? "<div class='c'><h2>Önce şunlara dön (en düşük başarı)</h2>" + a.slice(0, 3).map(x => "<div class='row'><span>" + esc(x[1]) + "</span><small>" + esc(x[0]) + " · %" + Math.round(x[2]) + " · " + x[3] + " soru</small></div>").join("") + "</div>"
+      : "";
+  }
+
+  function setCard() {
+    const c = S.cfg;
+    return "<div class='c'><h2>Hedefler</h2><div class='n3'>" +
+      "<div><label>Hedef puan</label><input type='number' id='cg' value='" + c.goal + "'></div>" +
+      "<div><label>Günlük soru</label><input type='number' id='cq' value='" + c.dq + "'></div>" +
+      "<div><label>Sınav tarihi</label><input type='date' id='cd' value='" + esc(c.date) + "'></div>" +
+      "</div></div>";
+  }
+
+  function vOzet() {
+    const t = ds(new Date()), td = sum(S.logs.filter(l => l.date === t)), all = sum(S.logs);
+    const dersRows = Object.keys(S.ders).map(k => {
+      const s = sum(S.logs.filter(l => l.ders === k)), p = pct(s);
+      return "<div class='row'><span>" + esc(k) + "</span><small>" + tot(s) + " soru · net " + f(net(s)) + " · %" + Math.round(p) + "</small></div>" +
+        "<div class='bar'><i style='width:" + p + "%;background:" + col(p) + "'></i></div>";
+    }).join("");
+
+    $("#v").innerHTML = hero(td) +
+      nextVideoQuickCard() +
+      reviewDueCard() +
+      "<div class='c'><h2>Bugün</h2>" + cards(td) + "</div>" +
+      "<div class='c'><h2>Toplam</h2>" + cards(all) + "</div>" +
+      weekHTML() +
+      "<div class='c'><h2>Derslere göre başarı</h2>" + dersRows + "</div>" +
+      weakCard() +
+      setCard();
+
+    const v = $("#v");
+    if ($("#go-vid")) $("#go-vid").onclick = () => { tab = "vid"; render(); window.scrollTo(0, 0); };
+    if ($("#oz-vid-done")) {
+      $("#oz-vid-done").onclick = () => keep(() => {
+        const nxt = getVideos("ALL").find(x => !x.v.w);
+        if (nxt) {
+          markVideoWatched(nxt, true);
+          save();
+        }
+      });
+    }
+    v.querySelectorAll(".rev-ok").forEach(b => b.onclick = () => keep(() => {
+      const e = wtp(b.dataset.k, b.dataset.t);
+      e.st = 3;
+      e.last = ds(new Date());
+      save();
+    }));
+    v.querySelectorAll(".cr").forEach(b => b.onclick = () => keep(() => { CR = +b.dataset.n; }));
+    v.querySelectorAll(".cl2").forEach(b => b.onclick = () => keep(() => {
+      const s = b.dataset.s;
+      CH.has(s) ? CH.delete(s) : CH.add(s);
+    }));
+    v.querySelectorAll(".wd").forEach(b => b.onclick = () => keep(() => { WD = b.dataset.k; }));
+    if ($("#cg")) {
+      const u = () => {
+        S.cfg = {
+          goal: Math.max(1, +$("#cg").value || 95),
+          dq: Math.max(1, +$("#cq").value || 100),
+          date: $("#cd").value
+        };
+        save();
+        render();
+      };
+      ["cg", "cq", "cd"].forEach(i => $("#" + i).onchange = u);
+    }
+  }
+
+  /* ==========================================================================
+     8. SORU EKLEME EKRANI
+     ========================================================================== */
+  function vEkle() {
+    const dk = Object.keys(S.ders);
+    $("#v").innerHTML = "<div class='c'><h2>Günlük soru kaydı</h2>" +
+      "<label>Tarih</label><input type='date' id='dt' value='" + ds(new Date()) + "'>" +
+      "<label>Ders</label><select id='ds'>" + dk.map(k => "<option value='" + esc(k) + "'>" + esc(k) + "</option>").join("") + "</select>" +
+      "<label>Konu / Ünite</label><select id='kn'></select>" +
+      "<label>Toplam soru (yazarsan boş otomatik hesaplanır)</label><input type='number' inputmode='numeric' min='0' id='tq' placeholder='Örn. 30'>" +
+      "<div class='n3'>" +
+      "<div><label>Doğru</label><input type='number' inputmode='numeric' min='0' id='d' value='0'></div>" +
+      "<div><label>Yanlış</label><input type='number' inputmode='numeric' min='0' id='y' value='0'></div>" +
+      "<div><label>Boş</label><input type='number' inputmode='numeric' min='0' id='b' value='0'></div>" +
+      "</div>" +
+      "<label>Çalışma süresi (saat)</label><input type='number' inputmode='decimal' step='0.25' min='0' id='hr' placeholder='Örn. 2.5'>" +
+      "<div class='pv' id='pv'></div>" +
+      "<button class='pb' id='sv'>Kaydet</button>" +
+      "</div>";
+
+    const g = i => Math.max(0, Math.floor(+$("#" + i).value || 0));
+    const fill = () => {
+      const units = S.ders[$("#ds").value] || [];
+      $("#kn").innerHTML = units.length
+        ? units.map(k => "<option value='" + esc(k) + "'>" + esc(k) + "</option>").join("")
+        : "<option value='Genel'>Genel</option>";
+    };
+    const pv = () => {
+      const T = g("tq"), d = g("d"), y = g("y");
+      if (T > 0) {
+        $("#b").value = Math.max(0, T - d - y);
+        $("#b").disabled = true;
+      } else {
+        $("#b").disabled = false;
+      }
+      const b = g("b");
+      const warn = (T > 0 && d + y > T) ? " <span class='no'>(doğru+yanlış toplamı aşıyor)</span>" : "";
+      $("#pv").innerHTML = "Toplam " + (d + y + b) + " · Boş " + b + " · Net <b class='ac'>" + f(d - y / 4) + "</b>" + warn;
+    };
+
+    fill();
+    pv();
+    $("#ds").onchange = fill;
+    ["tq", "d", "y", "b"].forEach(i => $("#" + i).oninput = pv);
+    $("#sv").onclick = () => {
+      const d = g("d"), y = g("y"), b = g("b"), h = Math.max(0, +$("#hr").value || 0);
+      if (d + y + b === 0 && !(h > 0)) return;
+      S.logs.push({
+        id: uid(),
+        date: $("#dt").value || ds(new Date()),
+        ders: $("#ds").value,
+        konu: $("#kn").value || "Genel",
+        d,
+        y,
+        b,
+        h
+      });
+      save();
+      tab = "ozet";
+      render();
+    };
+  }
+
+  /* ==========================================================================
+     9. KONULAR VE UYGULAMA İÇİ ÜNİTE / DERS DÜZENLEYİCİ
+     ========================================================================== */
+  const STN = ["Başlanmadı", "Devam ediyor", "Çalışıldı", "Tekrar edildi"];
+
+  function renameTopicData(d, oldName, newName) {
+    if (!oldName || !newName || oldName === newName) return;
+    S.logs.forEach(l => { if (l.ders === d && l.konu === oldName) l.konu = newName; });
+    S.hd.forEach(h => { if (h.ders === d && h.konu === oldName) h.konu = newName; });
+    const oldKey = d + "|" + oldName, newKey = d + "|" + newName;
+    if (S.tp[oldKey]) {
+      S.tp[newKey] = S.tp[oldKey];
+      delete S.tp[oldKey];
+    }
+    if (S.vd[oldKey]) {
+      S.vd[newKey] = (S.vd[newKey] || []).concat(S.vd[oldKey]);
+      delete S.vd[oldKey];
+    }
+  }
+
+  function vKonu() {
+    const dk = Object.keys(S.ders);
+    if (!dk.includes(ED_DERS)) ED_DERS = dk[0] || "Türkçe";
+
+    const modeBar = "<div class='seg'>" +
+      "<button class='" + (KM === "view" ? "on" : "") + "' data-km='view'>📚 Konu Takibi</button>" +
+      "<button class='" + (KM === "edit" ? "on" : "") + "' data-km='edit'>⚙️ Ünite / Konu Düzenle</button>" +
+      "</div>";
+
+    if (KM === "edit") {
+      const units = S.ders[ED_DERS] || [];
+      const isCustomDers = !DEFAULT_DERS[ED_DERS];
+
+      $("#v").innerHTML = modeBar +
+        "<div class='c'>" +
+        "<h2>Ders Seçimi ve Yeni Ders</h2>" +
+        "<label>Düzenlenecek Ders</label>" +
+        "<select id='ed-ders'>" + dk.map(k => "<option value='" + esc(k) + "'" + (k === ED_DERS ? " selected" : "") + ">" + esc(k) + " (" + (S.ders[k] || []).length + " ünite)</option>").join("") + "</select>" +
+        "<div class='ctl' style='margin-top:10px'>" +
+        "<input id='new-ders' placeholder='Yeni ders adı (örn. Eğitim Bilimleri)'>" +
+        "<button class='tb' id='add-ders'>+ Ders Ekle</button>" +
+        "</div>" +
+        "<div class='hb' style='margin-top:10px'>" +
+        (DEFAULT_DERS[ED_DERS] ? "<button class='tb' id='rst-ders'>Varsayılan ünitelere dön</button>" : "") +
+        (isCustomDers && dk.length > 1 ? "<button class='tb' id='del-ders' style='color:var(--no)'>Bu dersi sil</button>" : "") +
+        "</div>" +
+        "</div>" +
+
+        "<div class='c'>" +
+        "<h2>" + esc(ED_DERS) + " · Yeni Ünite Ekle</h2>" +
+        "<div class='ctl'>" +
+        "<input id='new-unit' placeholder='Tek ünite adı (örn. Osmanlı Kültür ve Medeniyeti)'>" +
+        "<button class='tb' id='add-unit'>+ Ekle</button>" +
+        "</div>" +
+        "<details style='margin-top:12px' open>" +
+        "<summary>📋 Test kitabından toplu ünite yapıştır (her satır bir ünite)</summary>" +
+        "<textarea id='bulk-units' style='min-height:110px;margin-top:8px' placeholder='Kitabın içindekiler kısmını kopyalayıp yapıştırabilirsin:\n1. Temel Kavramlar\n2. Basamak Kavramı\n3. Bölme ve Bölünebilme'></textarea>" +
+        "<div style='height:8px'></div>" +
+        "<button class='pb' id='add-bulk'>Satırları Ünite Olarak Ekle</button>" +
+        "<div class='st' id='bulk-msg' style='margin-top:6px'></div>" +
+        "</details>" +
+        "</div>" +
+
+        "<div class='c'>" +
+        "<h2>" + esc(ED_DERS) + " · Ünite Listesi (" + units.length + ")</h2>" +
+        "<small class='st' style='display:block;margin-bottom:8px'>Ünite adını kutucuktan doğrudan değiştirebilir veya oklarla sırasını ayarlayabilirsin.</small>" +
+        (units.length
+          ? units.map((u, idx) =>
+              "<div class='u-row'>" +
+              "<span class='u-idx'>" + (idx + 1) + ".</span>" +
+              "<input class='u-ren' data-idx='" + idx + "' value='" + esc(u) + "'>" +
+              "<div class='u-act'>" +
+              "<button class='tb u-up' data-idx='" + idx + "' title='Yukarı taşı'" + (idx === 0 ? " disabled" : "") + ">↑</button>" +
+              "<button class='tb u-dn' data-idx='" + idx + "' title='Aşağı taşı'" + (idx === units.length - 1 ? " disabled" : "") + ">↓</button>" +
+              "<button class='x u-del' data-idx='" + idx + "' title='Üniteyi sil'>✕</button>" +
+              "</div></div>"
+            ).join("")
+          : "<div class='e'>Bu derste henüz ünite yok. Yukarıdan ekleyebilirsin.</div>") +
+        "</div>";
+
+      const v = $("#v");
+      v.querySelectorAll("[data-km]").forEach(b => b.onclick = () => { KM = b.dataset.km; vKonu(); });
+      $("#ed-ders").onchange = () => { ED_DERS = $("#ed-ders").value; vKonu(); };
+
+      $("#add-ders").onclick = () => {
+        const name = $("#new-ders").value.trim();
+        if (!name) return;
+        if (!S.ders[name]) {
+          S.ders[name] = [];
+          DERS = S.ders;
+        }
+        ED_DERS = name;
+        save();
+        vKonu();
+      };
+
+      if ($("#rst-ders")) {
+        $("#rst-ders").onclick = () => {
+          S.ders[ED_DERS] = [...DEFAULT_DERS[ED_DERS]];
+          DERS = S.ders;
+          save();
+          vKonu();
+        };
+      }
+
+      if ($("#del-ders")) {
+        $("#del-ders").onclick = () => {
+          delete S.ders[ED_DERS];
+          DERS = S.ders;
+          ED_DERS = Object.keys(S.ders)[0];
+          save();
+          vKonu();
+        };
+      }
+
+      $("#add-unit").onclick = () => {
+        const val = $("#new-unit").value.trim();
+        if (!val) return;
+        const list = S.ders[ED_DERS] || (S.ders[ED_DERS] = []);
+        if (!list.includes(val)) {
+          list.push(val);
+          save();
+        }
+        vKonu();
+      };
+
+      $("#add-bulk").onclick = () => {
+        const raw = $("#bulk-units").value.split("\n");
+        const list = S.ders[ED_DERS] || (S.ders[ED_DERS] = []);
+        let added = 0;
+        raw.forEach(line => {
+          const cleaned = line
+            .replace(/^\s*(?:ünite\s*)?\d+\s*[.):\-–]\s*/i, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (cleaned.length >= 2 && !list.includes(cleaned)) {
+            list.push(cleaned);
+            added++;
+          }
+        });
+        if (added > 0) {
+          save();
+          vKonu();
+          const msg = $("#bulk-msg");
+          if (msg) msg.textContent = added + " yeni ünite eklendi ✓";
+        } else {
+          const msg = $("#bulk-msg");
+          if (msg) msg.textContent = "Eklenecek yeni ünite bulunamadı.";
+        }
+      };
+
+      v.querySelectorAll(".u-ren").forEach(inp => inp.onchange = () => keep(() => {
+        const idx = +inp.dataset.idx;
+        const list = S.ders[ED_DERS];
+        const oldVal = list[idx];
+        const newVal = inp.value.trim();
+        if (!newVal || newVal === oldVal) return;
+        if (list.includes(newVal)) {
+          inp.value = oldVal;
+          return;
+        }
+        list[idx] = newVal;
+        renameTopicData(ED_DERS, oldVal, newVal);
+        save();
+      }));
+
+      v.querySelectorAll(".u-up").forEach(b => b.onclick = () => keep(() => {
+        const i = +b.dataset.idx, list = S.ders[ED_DERS];
+        if (i > 0) {
+          [list[i - 1], list[i]] = [list[i], list[i - 1]];
+          save();
+        }
+      }));
+
+      v.querySelectorAll(".u-dn").forEach(b => b.onclick = () => keep(() => {
+        const i = +b.dataset.idx, list = S.ders[ED_DERS];
+        if (i < list.length - 1) {
+          [list[i + 1], list[i]] = [list[i], list[i + 1]];
+          save();
+        }
+      }));
+
+      v.querySelectorAll(".u-del").forEach(b => b.onclick = () => keep(() => {
+        const i = +b.dataset.idx, list = S.ders[ED_DERS];
+        const removed = list.splice(i, 1)[0];
+        if (removed && S.vd[ED_DERS + "|" + removed]) {
+          S.vd[ED_DERS + "|?"] = (S.vd[ED_DERS + "|?"] || []).concat(S.vd[ED_DERS + "|" + removed]);
+          delete S.vd[ED_DERS + "|" + removed];
+        }
+        save();
+      }));
+      return;
+    }
+
+    $("#v").innerHTML = modeBar + Object.keys(S.ders).map((k, dIdx) => {
+      const ts = S.ders[k] || [];
+      const done = ts.filter(t => rtp(k, t).st >= 2).length;
+      const um = S.vd[k + "|?"] || [];
+      const od = "D|" + k;
+      const color = dColor(k, dIdx);
+
+      const body = ts.map(t => {
+        const s = sum(S.logs.filter(l => l.ders === k && l.konu === t));
+        const p = pct(s), n = tot(s), e = rtp(k, t);
+        const vs = [...(S.vd[k + "|" + t] || [])].sort((a, b) => (a.ord || 0) - (b.ord || 0));
+        const w = vs.filter(v => v.w).length, o = k + "|" + t;
+
+        const vidDetails = vs.length
+          ? "<details data-o='" + esc(o) + "'" + (OP.has(o) ? " open" : "") + ">" +
+            "<summary>▶ " + w + "/" + vs.length + " video izlendi</summary>" +
+            vs.map((v, i) =>
+              "<label class='vi" + (v.w ? " w" : "") + "'>" +
+              "<input type='checkbox' class='vc' data-k='" + esc(k) + "' data-t='" + esc(t) + "' data-id='" + esc(v.id) + "'" + (v.w ? " checked" : "") + ">" +
+              "<span><b>" + (i + 1) + ".</b> " + esc(v.t) + (v.dur ? " <small class='st'>(" + esc(v.dur) + ")</small>" : "") + "</span>" +
+              "</label>"
+            ).join("") +
+            "</details>"
+          : "";
+
+        return "<div class='" + (n || e.st || vs.length ? "" : "dim") + "'>" +
+          "<div class='row'><span>" + esc(t) + "</span><small>" + (n ? n + " soru · net " + f(net(s)) : "soru yok") + "</small></div>" +
+          "<div class='bar'><i style='width:" + p + "%;background:" + col(p) + "'></i></div>" +
+          "<div class='ctl'>" +
+          "<select class='ss' data-k='" + esc(k) + "' data-t='" + esc(t) + "'>" + STN.map((x, i) => "<option value='" + i + "'" + (i === e.st ? " selected" : "") + ">" + x + "</option>").join("") + "</select>" +
+          "<button class='tb bt' data-k='" + esc(k) + "' data-t='" + esc(t) + "'>Bugün çalıştım</button>" +
+          "</div>" +
+          (e.last ? "<small class='st'>Son çalışma: " + dm(e.last) + "</small>" : "") +
+          vidDetails +
+          "</div>";
+      }).join("");
+
+      const u = um.length
+        ? "<details data-o='" + esc(k) + "|?'" + (OP.has(k + "|?") ? " open" : "") + ">" +
+          "<summary>Sınıflanmayan videolar (" + um.length + ")</summary>" +
+          um.map((v, i) =>
+            "<div class='vi'><span style='flex:1'><b>" + (i + 1) + ".</b> " + esc(v.t) + "</span>" +
+            "<select class='mv' data-k='" + esc(k) + "' data-i='" + i + "'><option value=''>Konu seç…</option>" + ts.map(t => "<option value='" + esc(t) + "'>" + esc(t) + "</option>").join("") + "</select>" +
+            "</div>"
+          ).join("") +
+          "</details>"
+        : "";
+
+      const prog = ts.length ? (done / ts.length * 100) : 0;
+      return "<div class='c'>" +
+        "<details class='dd' data-o='" + esc(od) + "'" + (OP.has(od) ? " open" : "") + ">" +
+        "<summary class='ds'><div style='flex:1;min-width:0'>" +
+        "<div class='row' style='margin:0'><span style='display:flex;align-items:center'><i class='d-dot' style='background:" + color + "'></i><b>" + esc(k) + "</b></span><small>" + done + "/" + ts.length + " ünite çalışıldı</small></div>" +
+        "<div class='bar' style='margin-top:8px'><i style='width:" + prog + "%;background:linear-gradient(90deg,var(--ac),var(--ac2))'></i></div>" +
+        "</div></summary>" +
+        "<div style='margin-top:6px'>" + body + u + "</div>" +
+        "</details></div>";
+    }).join("");
+
+    const v = $("#v");
+    v.querySelectorAll("[data-km]").forEach(b => b.onclick = () => { KM = b.dataset.km; vKonu(); });
+    v.querySelectorAll(".ss").forEach(s => s.onchange = () => keep(() => {
+      const e = wtp(s.dataset.k, s.dataset.t);
+      e.st = +s.value;
+      if (e.st > 0) e.last = ds(new Date());
+      save();
+    }));
+    v.querySelectorAll(".bt").forEach(b => b.onclick = () => keep(() => {
+      const e = wtp(b.dataset.k, b.dataset.t);
+      if (!e.st) e.st = 1;
+      e.last = ds(new Date());
+      save();
+    }));
+    v.querySelectorAll("details").forEach(d => d.ontoggle = () => {
+      d.open ? OP.add(d.dataset.o) : OP.delete(d.dataset.o);
+    });
+    v.querySelectorAll(".vc").forEach(c => c.onchange = () => {
+      const a = S.vd[c.dataset.k + "|" + c.dataset.t] || [];
+      const item = a.find(x => x.id === c.dataset.id);
+      if (!item) return;
+      item.w = c.checked ? 1 : 0;
+      item.wd = c.checked ? ds(new Date()) : "";
+      save();
+      c.closest("details").querySelector("summary").textContent = "▶ " + a.filter(x => x.w).length + "/" + a.length + " video izlendi";
+      c.closest(".vi").classList.toggle("w", c.checked);
+    });
+    v.querySelectorAll(".mv").forEach(s => s.onchange = () => {
+      if (!s.value) return;
+      keep(() => {
+        const k = s.dataset.k, x = S.vd[k + "|?"].splice(+s.dataset.i, 1)[0];
+        (S.vd[k + "|" + s.value] = S.vd[k + "|" + s.value] || []).push(x);
+        save();
+      });
+    });
+  }
+
+  /* ==========================================================================
+     10. YOUTUBE OYNATMA LİSTESİ ÇEKİCİ, SADELEŞTİRME VE TOPLU YÖNETİM
+     ========================================================================== */
+  const nz = s => " " + String(s || "").toLocaleLowerCase("tr")
+    .replace(/ç/g, "c").replace(/ğ/g, "g").replace(/ı/g, "i")
+    .replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
+    .replace(/[^a-z0-9]+/g, " ") + " ";
+
+  const STOP_WORDS = new Set(["ve", "ile", "de", "da", "bir", "icin", "konu", "anlatimi", "soru", "cozumu", "kpss", "benim", "hocam", "2024", "2025", "2026", "2027", "bolum", "ders", "video", "genel", "tekrar"]);
+
+  function cls(k, t) {
+    const n = nz(t);
+    const units = S.ders[k] || [];
+    let best = "?", bs = 0;
+
+    units.forEach(tp => {
+      let s = 0;
+      if (KW[k] && KW[k][tp]) {
+        for (const kw of KW[k][tp].split(",")) {
+          const cleanKw = kw.trim();
+          if (!cleanKw) continue;
+          if (n.includes(cleanKw.length < 4 ? " " + cleanKw + " " : " " + cleanKw)) {
+            s += cleanKw.length * 1.5;
+          }
+        }
+      }
+      const nTp = nz(tp).trim();
+      if (nTp.length >= 4 && n.includes(" " + nTp + " ")) {
+        s += nTp.length * 2.5;
+      } else {
+        const tokens = nTp.split(" ").filter(w => w.length >= 3 && !STOP_WORDS.has(w));
+        tokens.forEach(w => {
+          if (n.includes(" " + w)) s += w.length * 1.2;
+        });
+      }
+      if (s > bs) {
+        bs = s;
+        best = tp;
+      }
+    });
+
+    return bs >= 4 ? best : "?";
+  }
+
+  function fetchWithTimeout(url, opts = {}, ms = 4800) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal })).finally(() => clearTimeout(timer));
+  }
+
+  function extractJsonAfter(text, marker) {
+    const pos = text.indexOf(marker);
+    if (pos === -1) return null;
+    const start = text.indexOf("{", pos + marker.length);
+    if (start === -1) return null;
+    let depth = 0, inStr = false, escNext = false;
+    for (let i = start; i < text.length; i++) {
+      const ch = text[i];
+      if (inStr) {
+        if (escNext) escNext = false;
+        else if (ch === "\\") escNext = true;
+        else if (ch === '"') inStr = false;
+      } else {
+        if (ch === '"') inStr = true;
+        else if (ch === "{") depth++;
+        else if (ch === "}") {
+          depth--;
+          if (depth === 0) {
+            try {
+              return JSON.parse(text.slice(start, i + 1));
+            } catch (e) {
+              return null;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  function parseYtPlaylistHtml(html) {
+    const data = extractJsonAfter(html, "var ytInitialData =") ||
+      extractJsonAfter(html, 'window["ytInitialData"] =') ||
+      extractJsonAfter(html, "ytInitialData =");
+    if (!data) return null;
+
+    const plTitle = (data.metadata && data.metadata.playlistMetadataRenderer && data.metadata.playlistMetadataRenderer.title) || "";
+    const tabs = (data.contents && data.contents.twoColumnBrowseResultsRenderer && data.contents.twoColumnBrowseResultsRenderer.tabs) || [];
+    let items = [];
+    for (const tb of tabs) {
+      const secs = (tb && tb.tabRenderer && tb.tabRenderer.content && tb.tabRenderer.content.sectionListRenderer && tb.tabRenderer.content.sectionListRenderer.contents) || [];
+      for (const sec of secs) {
+        const sub = (sec && sec.itemSectionRenderer && sec.itemSectionRenderer.contents) || [];
+        for (const s of sub) {
+          if (s && s.playlistVideoListRenderer && s.playlistVideoListRenderer.contents) {
+            items = s.playlistVideoListRenderer.contents;
+            break;
+          }
+        }
+        if (items.length) break;
+      }
+      if (items.length) break;
+    }
+
+    const videos = [];
+    items.forEach(it => {
+      const r = it && it.playlistVideoRenderer;
+      if (!r || !r.videoId) return;
+      const title = ((r.title && r.title.runs ? r.title.runs.map(x => x.text).join("") : (r.title && r.title.simpleText)) || "").trim();
+      const dur = ((r.lengthText && r.lengthText.simpleText) || (r.lengthText && r.lengthText.runs ? r.lengthText.runs.map(x => x.text).join("") : "") || "").trim();
+      if (title && title !== "[Deleted video]" && title !== "[Private video]") {
+        videos.push({ t: title, vid: r.videoId, dur });
+      }
+    });
+    return videos.length ? { plTitle, videos } : null;
+  }
+
+  function formatSec(sec) {
+    sec = Math.max(0, Math.floor(Number(sec) || 0));
+    if (!sec) return "";
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    return h ? (h + ":" + pad(m) + ":" + pad(s)) : (m + ":" + pad(s));
+  }
+
+  async function fetchYoutubePlaylist(urlOrId) {
+    const raw = urlOrId.trim();
+    const m = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    const listId = m ? m[1] : (/^(PL|OL|UU|FL|RD)[a-zA-Z0-9_-]{10,}$/.test(raw) ? raw : "");
+    if (!listId) throw new Error("Geçerli bir YouTube oynatma listesi linki (list=...) bulunamadı.");
+
+    const ytUrl = "https://www.youtube.com/playlist?list=" + listId;
+
+    // Tüm kaynakları PARALEL ve sıkı 5 saniyelik zaman aşımı ile yarıştır (asla uzun bekletmez)
+    const tasks = [
+      // 1. Piped API
+      fetchWithTimeout("https://pipedapi.kavin.rocks/playlists/" + listId, {}, 5000).then(async r => {
+        if (!r.ok) throw new Error("Piped 1");
+        const j = await r.json();
+        const vids = (j.relatedStreams || []).map(s => ({
+          t: (s.title || "").trim(),
+          vid: (s.url || "").split("v=")[1] || "",
+          dur: formatSec(s.duration)
+        })).filter(x => x.t && x.t !== "[Deleted video]");
+        if (!vids.length) throw new Error("Empty");
+        return { plTitle: j.name || "", videos: vids };
+      }),
+      // 2. Piped API (yedek sunucu)
+      fetchWithTimeout("https://pipedapi.adminforge.de/playlists/" + listId, {}, 5000).then(async r => {
+        if (!r.ok) throw new Error("Piped 2");
+        const j = await r.json();
+        const vids = (j.relatedStreams || []).map(s => ({
+          t: (s.title || "").trim(),
+          vid: (s.url || "").split("v=")[1] || "",
+          dur: formatSec(s.duration)
+        })).filter(x => x.t && x.t !== "[Deleted video]");
+        if (!vids.length) throw new Error("Empty");
+        return { plTitle: j.name || "", videos: vids };
+      }),
+      // 3. Invidious API
+      fetchWithTimeout("https://inv.nadeko.net/api/v1/playlists/" + listId, {}, 5000).then(async r => {
+        if (!r.ok) throw new Error("Invidious");
+        const j = await r.json();
+        const vids = (j.videos || []).map(v => ({
+          t: (v.title || "").trim(),
+          vid: v.videoId || "",
+          dur: formatSec(v.lengthSeconds)
+        })).filter(x => x.t);
+        if (!vids.length) throw new Error("Empty");
+        return { plTitle: j.title || "", videos: vids };
+      }),
+      // 4. AllOrigins CORS Proxy
+      fetchWithTimeout("https://api.allorigins.win/get?url=" + encodeURIComponent(ytUrl), {}, 5000).then(async r => {
+        if (!r.ok) throw new Error("AO");
+        const j = await r.json();
+        const parsed = parseYtPlaylistHtml(j.contents || "");
+        if (!parsed) throw new Error("Parse failed");
+        return parsed;
+      })
+    ];
+
+    try {
+      return await Promise.any(tasks);
+    } catch (e) {
+      throw new Error("Tarayıcı güvenlik kısıtı nedeniyle link otomatik çekilemedi. Hemen aşağıdaki 'Başlıkları Yapıştır' kutusuna YouTube sayfasındaki video isimlerini kopyalayıp yapıştırabilirsin — gereksiz yazılar ve hoca adları otomatik temizlenir.");
+    }
+  }
+
+  function getVideos(filterDers) {
+    const out = [];
+    Object.keys(S.vd).forEach(key => {
+      const sep = key.indexOf("|");
+      if (sep === -1) return;
+      const ders = key.slice(0, sep);
+      const konu = key.slice(sep + 1);
+      if (filterDers && filterDers !== "ALL" && ders !== filterDers) return;
+      (S.vd[key] || []).forEach((v, idx) => {
+        out.push({ key, ders, konu, idx, v });
+      });
+    });
+    out.sort((a, b) => {
+      if (filterDers === "ALL" && a.ders !== b.ders) {
+        return a.ders.localeCompare(b.ders, "tr");
+      }
+      const oa = typeof a.v.ord === "number" ? a.v.ord : 999999;
+      const ob = typeof b.v.ord === "number" ? b.v.ord : 999999;
+      return oa - ob;
+    });
+    return out;
+  }
+
+  function ytWatchUrl(v) {
+    return v.vid
+      ? "https://www.youtube.com/watch?v=" + encodeURIComponent(v.vid)
+      : "https://www.youtube.com/results?search_query=" + encodeURIComponent(v.rt || v.t);
+  }
+
+  function markVideoWatched(item, watched) {
+    const t0 = ds(new Date());
+    item.v.w = watched ? 1 : 0;
+    item.v.wd = watched ? t0 : "";
+    if (watched && item.konu && item.konu !== "?") {
+      const tp = wtp(item.ders, item.konu);
+      if (!tp.st) tp.st = 1;
+      tp.last = t0;
+    }
+  }
+
+  function simplifyAllVideos(targetDers) {
+    const list = getVideos(targetDers);
+    if (!list.length) return 0;
+    let changed = 0;
+    list.forEach(item => {
+      if (!item.v.rt) item.v.rt = item.v.t;
+      const cleaned = cleanVideoTitle(item.v.rt || item.v.t);
+      if (cleaned && cleaned !== item.v.t) {
+        item.v.t = cleaned;
+        changed++;
+      }
+    });
+    // Ders bazında seri numaralandırma ("(1)", "(2)") uygula
+    const byDers = {};
+    list.forEach(item => {
+      (byDers[item.ders] = byDers[item.ders] || []).push(item.v);
+    });
+    Object.values(byDers).forEach(arr => {
+      const before = arr.map(x => x.t);
+      applySeriesNumbering(arr);
+      arr.forEach((x, idx) => {
+        if (x.t !== before[idx]) changed++;
+      });
+    });
+    return changed;
+  }
+
+  function restoreRawVideoTitles(targetDers) {
+    const list = getVideos(targetDers);
+    let restored = 0;
+    list.forEach(item => {
+      if (item.v.rt && item.v.rt !== item.v.t) {
+        item.v.t = item.v.rt;
+        restored++;
+      }
+    });
+    return restored;
+  }
+
+  function vVid() {
+    const dk = Object.keys(S.ders);
+    if (!dk.includes(VD_ADD_DERS)) VD_ADD_DERS = dk[0] || "Türkçe";
+    if (VD_FILTER_DERS !== "ALL" && !dk.includes(VD_FILTER_DERS)) VD_FILTER_DERS = "ALL";
+
+    const t0 = ds(new Date());
+    const allVideos = getVideos(VD_FILTER_DERS);
+    const nextItem = allVideos.find(x => !x.v.w);
+    const watchedCount = allVideos.filter(x => x.v.w).length;
+    const unwatchedCount = allVideos.length - watchedCount;
+    const todayCount = allVideos.filter(x => x.v.w && x.v.wd === t0).length;
+    const pctDone = allVideos.length ? Math.round(watchedCount / allVideos.length * 100) : 0;
+
+    // Geçersiz seçimleri temizle
+    const validIds = new Set(allVideos.map(x => x.v.id));
+    [...V_SELECTED].forEach(id => { if (!validIds.has(id)) V_SELECTED.delete(id); });
+
+    const filteredQueue = allVideos.filter(x => {
+      if (VF === "unwatched") return !x.v.w;
+      if (VF === "today") return x.v.w && x.v.wd === t0;
+      if (VF === "watched") return !!x.v.w;
+      return true;
+    });
+
+    const nextIdxInAll = nextItem ? (allVideos.indexOf(nextItem) + 1) : 0;
+    const nextCard = nextItem
+      ? "<div class='c next-vid'>" +
+        "<h2>▶ Sıradaki Video (Kaldığın Yer · #" + nextIdxInAll + ")</h2>" +
+        "<div style='font-size:16px;font-weight:700;margin:4px 0'>" + esc(nextItem.v.t) + "</div>" +
+        "<div class='vq-meta'>" +
+        "<span class='vq-tag'>" + esc(nextItem.ders) + "</span>" +
+        "<span class='vq-tag'>📚 " + esc(nextItem.konu === "?" ? "Sınıflanmayan" : nextItem.konu) + "</span>" +
+        (nextItem.v.dur ? "<span class='vq-tag'>⏱ " + esc(nextItem.v.dur) + "</span>" : "") +
+        (nextItem.v.pl ? "<span class='vq-tag'>📺 " + esc(nextItem.v.pl) + "</span>" : "") +
+        "</div>" +
+        "<div class='ctl' style='margin-top:12px'>" +
+        "<a href='" + ytWatchUrl(nextItem.v) + "' target='_blank' rel='noopener' class='tb' style='text-align:center;text-decoration:none;flex:1'>YouTube'da Aç ↗</a>" +
+        "<button class='pb' id='v-next-done' style='flex:1.4'>Bugün İzledim ✓</button>" +
+        "</div></div>"
+      : (allVideos.length
+          ? "<div class='c next-vid'><h2>🎉 Tebrikler!</h2><p class='mq' style='margin:0'>Seçili listedeki tüm videoları (" + allVideos.length + "/" + allVideos.length + ") tamamladın!</p></div>"
+          : "");
+
+    const importCard = "<div class='c'>" +
+      "<h2>YouTube Oynatma Listesi Ekle</h2>" +
+      "<label>Ders</label>" +
+      "<select id='vd'>" + dk.map(k => "<option value='" + esc(k) + "'" + (k === VD_ADD_DERS ? " selected" : "") + ">" + esc(k) + "</option>").join("") + "</select>" +
+      "<label>Liste / Hoca Etiketi (isteğe bağlı)</label>" +
+      "<input id='vpl' placeholder='Örn. Benim Hocam (sadece etiket olarak görünür)'>" +
+      "<label>YouTube Oynatma Listesi Linki</label>" +
+      "<div class='ctl'>" +
+      "<input id='vurl' type='url' placeholder='https://www.youtube.com/playlist?list=PL...'>" +
+      "<button class='pb' id='vf-btn' style='flex:0 0 auto;width:auto;padding:10px 14px'>Listeyi Çek</button>" +
+      "</div>" +
+      "<div class='pv' id='vm' style='font-size:13.5px;margin:8px 0'></div>" +
+      "<details" + (VM === "text" ? " open" : "") + ">" +
+      "<summary>📋 veya Video Başlıklarını Yapıştır (Otomatik Sadeleştirilir)</summary>" +
+      "<textarea id='vt' style='min-height:105px;margin-top:8px' placeholder='YouTube oynatma listesi sayfasındaki tüm metni (Ctrl+A / Tümünü Seç -> Kopyala) buraya yapıştırabilirsin. Hoca adları, yıllar, süreler ve çift numaralar otomatik temizlenir!'></textarea>" +
+      "<div style='height:8px'></div>" +
+      "<button class='pb' id='va' style='width:100%'>Başlıkları Temizle ve Sırayla Ekle</button>" +
+      "</details>" +
+      "</div>";
+
+    const subjectFilterChips = "<div class='chips'>" +
+      "<button class='tb vdk' data-k='ALL' style='" + (VD_FILTER_DERS === "ALL" ? "border-color:var(--ac);color:var(--ac)" : "") + "'>Tümü (" + getVideos("ALL").length + ")</button>" +
+      dk.map((k, idx) => {
+        const cnt = getVideos(k).length;
+        const activeStyle = VD_FILTER_DERS === k ? ("border-color:" + dColor(k, idx) + ";color:" + dColor(k, idx)) : "";
+        return "<button class='tb vdk' data-k='" + esc(k) + "' style='" + activeStyle + "'>" + esc(k) + (cnt ? " (" + cnt + ")" : "") + "</button>";
+      }).join("") +
+      "</div>";
+
+    const hasRestorable = allVideos.some(x => x.v.rt && x.v.rt !== x.v.t);
+    const toolsBar = allVideos.length
+      ? "<div class='hb' style='margin:8px 0'>" +
+        "<button class='tb' id='v-clean-all' style='border-color:var(--ac);color:var(--ac)'>✨ Mevcut İsimleri Sadeleştir</button>" +
+        (hasRestorable ? "<button class='tb' id='v-restore-all'>↩ Orijinal İsimlere Dön</button>" : "") +
+        "<button class='tb' id='v-sel-toggle' style='" + (V_SELECT_MODE ? "border-color:var(--no);color:var(--no)" : "") + "'>" + (V_SELECT_MODE ? "✕ Seçimi Kapat" : "☑️ Toplu Seç / Sil") + "</button>" +
+        "</div>"
+      : "";
+
+    const bulkActionBar = V_SELECT_MODE && allVideos.length
+      ? "<div class='bulk-bar'>" +
+        "<button class='tb' id='v-sel-all'>" + (V_SELECTED.size === filteredQueue.length && filteredQueue.length ? "Seçimi Kaldır" : "Tümünü Seç") + "</button>" +
+        (V_SELECTED.size ? "<button class='tb danger-btn' id='v-del-sel'>🗑️ Seçilenleri Sil (" + V_SELECTED.size + ")</button>" : "") +
+        (unwatchedCount ? "<button class='tb danger-btn' id='v-del-unw'>İzlenmeyenleri Sil (" + unwatchedCount + ")</button>" : "") +
+        (VD_FILTER_DERS !== "ALL"
+          ? "<button class='tb danger-btn' id='v-del-all'>Tüm " + esc(VD_FILTER_DERS) + " Videolarını Sil</button>"
+          : "<button class='tb danger-btn' id='v-del-all'>Tüm Videoları Temizle</button>") +
+        "</div>"
+      : "";
+
+    const queueRows = filteredQueue.length
+      ? filteredQueue.map((item, qIdx) => {
+          const v = item.v;
+          const displayOrd = allVideos.indexOf(item) + 1;
+          const isToday = v.w && v.wd === t0;
+          const units = S.ders[item.ders] || [];
+          const isEditing = V_EDIT_ID === v.id;
+          const isSelected = V_SELECTED.has(v.id);
+
+          return "<div class='vq-item" + (v.w && !V_SELECT_MODE ? " w" : "") + "'>" +
+            (V_SELECT_MODE
+              ? "<input type='checkbox' class='sel-chk' data-id='" + esc(v.id) + "'" + (isSelected ? " checked" : "") + ">"
+              : "<input type='checkbox' class='vq-chk' data-key='" + esc(item.key) + "' data-id='" + esc(v.id) + "'" + (v.w ? " checked" : "") + ">") +
+            "<div class='vq-body'>" +
+            (isEditing
+              ? "<div class='ctl' style='margin:0 0 6px'><input class='vq-ed-inp' data-id='" + esc(v.id) + "' value='" + esc(v.t) + "'><button class='tb vq-ed-ok' data-key='" + esc(item.key) + "' data-id='" + esc(v.id) + "' style='color:var(--ok);border-color:var(--ok)'>Kaydet</button></div>"
+              : "<a href='" + ytWatchUrl(v) + "' target='_blank' rel='noopener' class='vq-title'><b class='ac'>" + displayOrd + ".</b> " + esc(v.t) + "</a>") +
+            "<div class='vq-meta'>" +
+            (VD_FILTER_DERS === "ALL" ? "<span class='vq-tag'>" + esc(item.ders) + "</span>" : "") +
+            (v.dur ? "<span class='vq-tag'>⏱ " + esc(v.dur) + "</span>" : "") +
+            (v.pl ? "<span class='vq-tag'>" + esc(v.pl) + "</span>" : "") +
+            (isToday
+              ? "<span class='vq-tag today'>✓ Bugün izlendi</span>"
+              : (v.w ? "<span class='vq-tag'>✓ İzlendi" + (v.wd ? " · " + dm(v.wd) : "") + "</span>" : "<span class='vq-tag'>Eksik</span>")) +
+            "<select class='vq-sel' data-ders='" + esc(item.ders) + "' data-key='" + esc(item.key) + "' data-id='" + esc(v.id) + "'>" +
+            "<option value='?'" + (item.konu === "?" ? " selected" : "") + ">Sınıflanmayan</option>" +
+            units.map(u => "<option value='" + esc(u) + "'" + (u === item.konu ? " selected" : "") + ">" + esc(u) + "</option>").join("") +
+            "</select>" +
+            (!v.w && !V_SELECT_MODE ? "<button class='tb vq-today' data-key='" + esc(item.key) + "' data-id='" + esc(v.id) + "' style='padding:3px 8px;font-size:11.5px;color:var(--ok);border-color:var(--ok)'>Bugün İzledim</button>" : "") +
+            "</div></div>" +
+            "<div class='u-act'>" +
+            "<button class='tb vq-edit' data-id='" + esc(v.id) + "' title='İsmi düzenle'>✎</button>" +
+            (VD_FILTER_DERS !== "ALL"
+              ? "<button class='tb vq-up' data-q='" + qIdx + "' title='Yukarı'>↑</button><button class='tb vq-dn' data-q='" + qIdx + "' title='Aşağı'>↓</button>"
+              : "") +
+            "<button class='x vq-del' data-key='" + esc(item.key) + "' data-id='" + esc(v.id) + "' title='Sil'>✕</button>" +
+            "</div></div>";
+        }).join("")
+      : "<div class='e'>" + (allVideos.length ? "Bu filtrede video yok." : "Henüz video eklenmedi. Yukarıdan YouTube oynatma listesi ekleyebilirsin.") + "</div>";
+
+    const listCard = "<div class='c'>" +
+      "<h2>Video Listesi · " + watchedCount + "/" + allVideos.length + " izlendi (%" + pctDone + ")</h2>" +
+      subjectFilterChips +
+      (allVideos.length
+        ? "<div class='bar' style='margin:8px 0'><i style='width:" + pctDone + "%;background:linear-gradient(90deg,var(--ac),var(--ac2))'></i></div>" +
+          "<div class='chips'>" +
+          "<button class='tb vfl' data-f='all' style='" + (VF === "all" ? "border-color:var(--ac);color:var(--ac)" : "") + "'>Tümü (" + allVideos.length + ")</button>" +
+          "<button class='tb vfl' data-f='unwatched' style='" + (VF === "unwatched" ? "border-color:var(--ac);color:var(--ac)" : "") + "'>Eksikler (" + unwatchedCount + ")</button>" +
+          "<button class='tb vfl' data-f='today' style='" + (VF === "today" ? "border-color:var(--ok);color:var(--ok)" : "") + "'>Bugün İzlenenler (" + todayCount + ")</button>" +
+          "<button class='tb vfl' data-f='watched' style='" + (VF === "watched" ? "border-color:var(--ac2);color:var(--ac2)" : "") + "'>İzlenenler (" + watchedCount + ")</button>" +
+          "</div>" +
+          toolsBar +
+          bulkActionBar
+        : "") +
+      "<div style='margin-top:6px'>" + queueRows + "</div>" +
+      (allVideos.length && !V_SELECT_MODE
+        ? "<div style='margin-top:12px;display:flex;justify-content:flex-end'><button class='tb danger-btn cl' data-k='" + esc(VD_FILTER_DERS) + "'>" +
+          (VD_FILTER_DERS === "ALL" ? "🗑️ Tüm Videoları Temizle" : "🗑️ " + esc(VD_FILTER_DERS) + " Videolarını Sil") +
+          "</button></div>"
+        : "") +
+      "</div>";
+
+    $("#v").innerHTML = nextCard + importCard + listCard;
+
+    const v = $("#v");
+    $("#vd").onchange = () => { VD_ADD_DERS = $("#vd").value; };
+    v.querySelectorAll(".vdk").forEach(b => b.onclick = () => { VD_FILTER_DERS = b.dataset.k; V_SELECTED.clear(); vVid(); });
+    v.querySelectorAll(".vfl").forEach(b => b.onclick = () => { VF = b.dataset.f; vVid(); });
+
+    const addVideosToState = (k, plLabel, rawItems) => {
+      const existing = getVideos(k);
+      const byVid = new Map();
+      const byTitle = new Set();
+      let maxOrd = existing.reduce((m, x) => Math.max(m, typeof x.v.ord === "number" ? x.v.ord : 0), 0);
+
+      existing.forEach(x => {
+        if (x.v.vid) byVid.set(x.v.vid, x.v);
+        byTitle.add(x.v.t);
+      });
+
+      // Başlıkları otomatik sadeleştir ve seri numaralandırması uygula
+      const prepared = rawItems.map(it => ({
+        rt: it.t,
+        t: cleanVideoTitle(it.t),
+        vid: it.vid || "",
+        dur: it.dur || ""
+      }));
+      applySeriesNumbering(prepared);
+
+      let added = 0, unmatched = 0;
+      prepared.forEach(it => {
+        if (it.vid && byVid.has(it.vid)) {
+          const old = byVid.get(it.vid);
+          if (!old.dur && it.dur) old.dur = it.dur;
+          if (!old.pl && plLabel) old.pl = plLabel;
+          return;
+        }
+        if (byTitle.has(it.t)) return;
+        byTitle.add(it.t);
+        maxOrd++;
+        const c = cls(k, it.t);
+        const bucket = S.vd[k + "|" + c] || (S.vd[k + "|" + c] = []);
+        bucket.push({
+          id: uid(),
+          t: it.t,
+          rt: it.rt,
+          w: 0,
+          vid: it.vid,
+          dur: it.dur,
+          pl: plLabel || "",
+          ord: maxOrd,
+          wd: ""
+        });
+        added++;
+        if (c === "?") unmatched++;
+      });
+      return { added, unmatched };
+    };
+
+    if ($("#vf-btn")) {
+      $("#vf-btn").onclick = async () => {
+        const url = $("#vurl").value.trim();
+        const k = $("#vd").value;
+        const plCustom = $("#vpl").value.trim();
+        if (!url) {
+          $("#vm").textContent = "Lütfen bir YouTube oynatma listesi linki yapıştır.";
+          return;
+        }
+        $("#vf-btn").disabled = true;
+        $("#vf-btn").textContent = "Çekiliyor…";
+        $("#vm").textContent = "Oynatma listesi kontrol ediliyor (en fazla 5 sn)…";
+        try {
+          const res = await fetchYoutubePlaylist(url);
+          const label = plCustom || (res.plTitle ? cleanVideoTitle(res.plTitle) : "");
+          const { added, unmatched } = addVideosToState(k, label, res.videos);
+          VD_ADD_DERS = k;
+          VD_FILTER_DERS = k;
+          save();
+          vVid();
+          const msgEl = $("#vm");
+          if (msgEl) {
+            msgEl.textContent = added
+              ? added + " video sadeleştirilip sırayla eklendi ✓" + (unmatched ? " (" + unmatched + " tanesi Sınıflanmayan altında)" : "")
+              : "Listedeki tüm videolar zaten ekli.";
+          }
+        } catch (err) {
+          $("#vf-btn").disabled = false;
+          $("#vf-btn").textContent = "Listeyi Çek";
+          VM = "text";
+          const det = $("#v").querySelector("details");
+          if (det) det.open = true;
+          $("#vm").innerHTML = "<span class='wn'>" + esc(err.message || "Liste çekilemedi.") + "</span>";
+        }
+      };
+    }
+
+    if ($("#va")) {
+      $("#va").onclick = () => {
+        const k = $("#vd").value;
+        const plLabel = $("#vpl").value.trim();
+        const lines = $("#vt").value.split("\n").map(x => x.trim()).filter(x =>
+          x.length >= 6 &&
+          !/^\d{1,2}(:\d{2}){1,2}$/.test(x) &&
+          !/^\d+$/.test(x) &&
+          !/^(şimdi oynatılıyor|oynatılıyor|tümünü oynat|karıştır|abone ol|paylaş|kaydet|görüntüleme|bölüm|önce|gün önce|ay önce|yıl önce)/i.test(x) &&
+          !/^\d+[\.,]?\d*\s*(?:b|mn|bin|milyon)?\s*görüntüleme/i.test(x)
+        );
+        const items = lines.map(line => {
+          const durMatch = line.match(/\s+(\d{1,2}:\d{2}(?::\d{2})?)$/);
+          const dur = durMatch ? durMatch[1] : "";
+          const cleaned = line.replace(/\s+\d{1,2}:\d{2}(?::\d{2})?$/, "").trim();
+          return { t: cleaned, vid: "", dur };
+        }).filter(x => x.t.length >= 5);
+
+        const { added, unmatched } = addVideosToState(k, plLabel, items);
+        if (!added) {
+          $("#vm").textContent = "Eklenecek yeni video başlığı bulunamadı.";
+          return;
+        }
+        VD_ADD_DERS = k;
+        VD_FILTER_DERS = k;
+        save();
+        vVid();
+        const msgEl = $("#vm");
+        if (msgEl) {
+          msgEl.textContent = added + " video sadeleştirilip eklendi ✓" + (unmatched ? " (" + unmatched + " tanesi Sınıflanmayan altında)" : "");
+        }
+      };
+    }
+
+    if ($("#v-clean-all")) {
+      $("#v-clean-all").onclick = () => keep(() => {
+        const cnt = simplifyAllVideos(VD_FILTER_DERS);
+        save();
+        setTimeout(() => {
+          const msgEl = $("#vm");
+          if (msgEl) msgEl.textContent = cnt ? cnt + " video ismi sadeleştirildi ✓" : "Tüm video isimleri zaten sade.";
+        }, 10);
+      });
+    }
+
+    if ($("#v-restore-all")) {
+      $("#v-restore-all").onclick = () => keep(() => {
+        restoreRawVideoTitles(VD_FILTER_DERS);
+        save();
+      });
+    }
+
+    if ($("#v-sel-toggle")) {
+      $("#v-sel-toggle").onclick = () => {
+        V_SELECT_MODE = !V_SELECT_MODE;
+        V_SELECTED.clear();
+        vVid();
+      };
+    }
+
+    if ($("#v-sel-all")) {
+      $("#v-sel-all").onclick = () => {
+        if (V_SELECTED.size === filteredQueue.length) {
+          V_SELECTED.clear();
+        } else {
+          filteredQueue.forEach(x => V_SELECTED.add(x.v.id));
+        }
+        vVid();
+      };
+    }
+
+    v.querySelectorAll(".sel-chk").forEach(chk => chk.onchange = () => {
+      if (chk.checked) V_SELECTED.add(chk.dataset.id);
+      else V_SELECTED.delete(chk.dataset.id);
+      vVid();
+    });
+
+    if ($("#v-del-sel")) {
+      $("#v-del-sel").onclick = () => keep(() => {
+        Object.keys(S.vd).forEach(key => {
+          S.vd[key] = (S.vd[key] || []).filter(item => !V_SELECTED.has(item.id));
+        });
+        V_SELECTED.clear();
+        V_SELECT_MODE = false;
+        save();
+      });
+    }
+
+    if ($("#v-del-unw")) {
+      $("#v-del-unw").onclick = () => keep(() => {
+        const targetIds = new Set(allVideos.filter(x => !x.v.w).map(x => x.v.id));
+        Object.keys(S.vd).forEach(key => {
+          S.vd[key] = (S.vd[key] || []).filter(item => !targetIds.has(item.id));
+        });
+        V_SELECTED.clear();
+        V_SELECT_MODE = false;
+        save();
+      });
+    }
+
+    if ($("#v-del-all")) {
+      $("#v-del-all").onclick = () => keep(() => {
+        if (VD_FILTER_DERS === "ALL") {
+          S.vd = {};
+        } else {
+          Object.keys(S.vd).filter(x => x.startsWith(VD_FILTER_DERS + "|")).forEach(x => delete S.vd[x]);
+        }
+        V_SELECTED.clear();
+        V_SELECT_MODE = false;
+        save();
+      });
+    }
+
+    if ($("#v-next-done") && nextItem) {
+      $("#v-next-done").onclick = () => keep(() => {
+        markVideoWatched(nextItem, true);
+        save();
+      });
+    }
+
+    v.querySelectorAll(".vq-chk").forEach(chk => chk.onchange = () => keep(() => {
+      const arr = S.vd[chk.dataset.key] || [];
+      const video = arr.find(x => x.id === chk.dataset.id);
+      if (!video) return;
+      const ders = chk.dataset.key.split("|")[0];
+      const konu = chk.dataset.key.split("|")[1];
+      markVideoWatched({ ders, konu, v: video }, chk.checked);
+      save();
+    }));
+
+    v.querySelectorAll(".vq-today").forEach(btn => btn.onclick = () => keep(() => {
+      const arr = S.vd[btn.dataset.key] || [];
+      const video = arr.find(x => x.id === btn.dataset.id);
+      if (!video) return;
+      const ders = btn.dataset.key.split("|")[0];
+      const konu = btn.dataset.key.split("|")[1];
+      markVideoWatched({ ders, konu, v: video }, true);
+      save();
+    }));
+
+    v.querySelectorAll(".vq-edit").forEach(btn => btn.onclick = () => {
+      V_EDIT_ID = (V_EDIT_ID === btn.dataset.id) ? "" : btn.dataset.id;
+      vVid();
+    });
+
+    v.querySelectorAll(".vq-ed-ok").forEach(btn => btn.onclick = () => keep(() => {
+      const arr = S.vd[btn.dataset.key] || [];
+      const video = arr.find(x => x.id === btn.dataset.id);
+      const inp = v.querySelector(".vq-ed-inp[data-id='" + btn.dataset.id + "']");
+      if (video && inp && inp.value.trim()) {
+        video.t = inp.value.trim();
+        save();
+      }
+      V_EDIT_ID = "";
+    }));
+
+    v.querySelectorAll(".vq-sel").forEach(sel => sel.onchange = () => keep(() => {
+      const oldKey = sel.dataset.key;
+      const newKey = sel.dataset.ders + "|" + sel.value;
+      if (oldKey === newKey) return;
+      const arr = S.vd[oldKey] || [];
+      const idx = arr.findIndex(x => x.id === sel.dataset.id);
+      if (idx === -1) return;
+      const moved = arr.splice(idx, 1)[0];
+      if (moved) {
+        (S.vd[newKey] = S.vd[newKey] || []).push(moved);
+        save();
+      }
+    }));
+
+    v.querySelectorAll(".vq-up").forEach(btn => btn.onclick = () => keep(() => {
+      const qIdx = +btn.dataset.q;
+      if (qIdx <= 0) return;
+      const cur = filteredQueue[qIdx].v, prev = filteredQueue[qIdx - 1].v;
+      const tmp = cur.ord;
+      cur.ord = prev.ord;
+      prev.ord = tmp;
+      save();
+    }));
+
+    v.querySelectorAll(".vq-dn").forEach(btn => btn.onclick = () => keep(() => {
+      const qIdx = +btn.dataset.q;
+      if (qIdx >= filteredQueue.length - 1) return;
+      const cur = filteredQueue[qIdx].v, next = filteredQueue[qIdx + 1].v;
+      const tmp = cur.ord;
+      cur.ord = next.ord;
+      next.ord = tmp;
+      save();
+    }));
+
+    v.querySelectorAll(".vq-del").forEach(btn => btn.onclick = () => keep(() => {
+      const arr = S.vd[btn.dataset.key] || [];
+      S.vd[btn.dataset.key] = arr.filter(x => x.id !== btn.dataset.id);
+      save();
+    }));
+
+    v.querySelectorAll(".cl").forEach(b => b.onclick = () => {
+      const k = b.dataset.k;
+      if (k === "ALL") {
+        S.vd = {};
+      } else {
+        Object.keys(S.vd).filter(x => x.startsWith(k + "|")).forEach(x => delete S.vd[x]);
+      }
+      save();
+      render();
+    });
+  }
+
+  /* ==========================================================================
+     11. ODAK MODU (POMODORO, GERİ SAYIM, KRONOMETRE + DERS SEÇİMİ)
+     ========================================================================== */
+  const TM = { m: "pom", run: false, t0: 0, acc: 0, ph: "w", cm: 30 };
+  const tdur = () => TM.m === "pom" ? (TM.ph === "w" ? 1500 : 300) : TM.cm * 60;
+  const tel = () => TM.acc + (TM.run ? (Date.now() - TM.t0) / 1000 : 0);
+
+  function fmt(s) {
+    s = Math.max(0, Math.floor(s));
+    return pad(Math.floor(s / 60)) + ":" + pad(s % 60);
+  }
+
+  function logF(min) {
+    if (min >= 1) {
+      S.fs.push({ id: uid(), date: ds(new Date()), min: Math.round(min), ders: FOCUS_DERS || "" });
+      save();
+    }
+  }
+
+  function beep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) {
+        const a = new Ctx(), o = a.createOscillator();
+        o.connect(a.destination);
+        o.frequency.value = 880;
+        o.start();
+        setTimeout(() => o.stop(), 400);
+      }
+    } catch (e) {}
+    try {
+      if (navigator.vibrate) navigator.vibrate(300);
+    } catch (e) {}
+  }
+
+  function tfin() {
+    beep();
+    if (TM.m === "cd" || (TM.m === "pom" && TM.ph === "w")) logF(tdur() / 60);
+    if (TM.m === "pom") TM.ph = TM.ph === "w" ? "b" : "w";
+    TM.run = false;
+    TM.acc = 0;
+    if (tab === "odak") vOdak();
+  }
+
+  function tdraw() {
+    const el = $("#tm"), tr = $("#tr");
+    if (!el || !tr) return;
+    const e = tel(), d = tdur(), sw = TM.m === "sw";
+    const p = sw ? (e % 3600) / 3600 * 100 : Math.min(100, e / d * 100);
+    el.textContent = fmt(sw ? e : d - e);
+    tr.style.strokeDasharray = (553 * p / 100) + " 553";
+  }
+
+  setInterval(() => {
+    if (!TM.run) return;
+    if (TM.m !== "sw" && tel() >= tdur()) {
+      tfin();
+      return;
+    }
+    tdraw();
+  }, 500);
+
+  function vOdak() {
+    const t0 = ds(new Date()), modes = [["pom", "Pomodoro"], ["cd", "Geri sayım"], ["sw", "Kronometre"]];
+    const dk = Object.keys(S.ders);
+    $("#v").innerHTML = "<div class='c'><h2>Odak modu</h2>" +
+      "<div class='seg'>" + modes.map(m => "<button class='" + (TM.m === m[0] ? "on" : "") + "' data-m='" + m[0] + "'>" + m[1] + "</button>").join("") + "</div>" +
+      "<div class='ctl' style='margin-bottom:8px'><select id='f-ders'><option value=''>Genel Çalışma (Ders seçimi isteğe bağlı)</option>" +
+      dk.map(k => "<option value='" + esc(k) + "'" + (FOCUS_DERS === k ? " selected" : "") + ">" + esc(k) + "</option>").join("") +
+      "</select></div>" +
+      "<div class='clock'><svg viewBox='0 0 200 200'>" +
+      "<circle cx='100' cy='100' r='88' fill='none' stroke-width='10' style='stroke:var(--bd)'/>" +
+      "<circle id='tr' cx='100' cy='100' r='88' fill='none' stroke-width='10' stroke-linecap='round' transform='rotate(-90 100 100)' stroke-dasharray='0 553' style='stroke:" + (TM.m === "pom" && TM.ph === "b" ? "var(--ok)" : "var(--ac)") + "'/>" +
+      "</svg><div><b id='tm'>00:00</b><small>" + (TM.m === "pom" ? (TM.ph === "w" ? "Odak (25 dk)" : "Mola (5 dk)") : TM.m === "cd" ? "Geri sayım" : "Süre") + "</small></div></div>" +
+      (TM.m === "cd" ? "<div class='chips' style='justify-content:center'>" + [15, 25, 45, 60, 90].map(x => "<button class='tb cmb' data-v='" + x + "' style='" + (TM.cm === x ? "border-color:var(--ac);color:var(--ac)" : "") + "'>" + x + " dk</button>").join("") + "</div>" : "") +
+      "<div class='ctl'>" +
+      "<button class='pb' id='ts'>" + (TM.run ? "Duraklat" : "Başlat") + "</button>" +
+      "<button class='tb' id='tf'>Bitir ve kaydet</button>" +
+      "<button class='tb' id='tz'>Sıfırla</button>" +
+      "</div></div>" +
+      "<div class='c'><h2>İstatistik</h2>" +
+      "<div class='g' style='grid-template-columns:repeat(3,1fr)'>" +
+      "<div><b>" + Math.round(fmin(t0)) + "</b><span>Bugün (dk)</span></div>" +
+      "<div><b>" + Math.round(fmin(dAgo(6))) + "</b><span>7 gün (dk)</span></div>" +
+      "<div><b>" + S.fs.length + "</b><span>Oturum</span></div>" +
+      "</div></div>";
+
+    const v = $("#v");
+    $("#f-ders").onchange = () => { FOCUS_DERS = $("#f-ders").value; };
+    v.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { TM.m = b.dataset.m; TM.run = false; TM.acc = 0; TM.ph = "w"; vOdak(); });
+    v.querySelectorAll(".cmb").forEach(b => b.onclick = () => { TM.cm = +b.dataset.v; TM.run = false; TM.acc = 0; vOdak(); });
+    $("#ts").onclick = () => {
+      if (TM.run) { TM.acc = tel(); TM.run = false; }
+      else { TM.t0 = Date.now(); TM.run = true; }
+      vOdak();
+    };
+    $("#tf").onclick = () => {
+      const e = tel();
+      if (TM.m === "sw" || TM.ph === "w") logF(e / 60);
+      TM.run = false;
+      TM.acc = 0;
+      if (TM.m === "pom") TM.ph = "w";
+      vOdak();
+    };
+    $("#tz").onclick = () => { TM.run = false; TM.acc = 0; vOdak(); };
+    tdraw();
+  }
+
+  /* ==========================================================================
+     12. DAHA MENÜSÜ VE ALT EKRANLAR (DENEME, BANKA, HATA, KAYIT, KURULUM)
+     ========================================================================== */
+  function vMore() {
+    const vc = Object.values(S.vd).reduce((a, x) => a + x.length, 0);
+    const pend = S.hd.filter(h => !h.ok).length;
+    const G = [
+      ["DENEME VE SORULAR", [
+        ["den", "Deneme", "genel ve branş net analizi", S.ex.length + " kayıt", "#22e3d0"],
+        ["banka", "Soru Bankası", "kitap test ilerlemesi", S.bk.length + " banka", "#9b6bff"],
+        ["hata", "Hata Defteri", "yanlışlarım ve çözümlerim", pend + " bekliyor", "#ff4d8d"]
+      ]],
+      ["ÇALIŞMA VE SİSTEM", [
+        ["vid", "Video Listesi", "YouTube oynatma listeleri ve sıralı takip", vc + " video", "#ffb020"],
+        ["kayit", "Kayıtlar", "tüm soru girişlerim", S.logs.length + " kayıt", "#2ee59d"],
+        ["sync", "Bulut & Kurulum", "tam ekran uygulama kurulumu ve senkron", "ayarlar", "#4da3ff"]
+      ]]
+    ];
+
+    $("#v").innerHTML = G.map(g =>
+      "<div class='gh'>" + g[0] + "</div>" +
+      g[1].map(i =>
+        "<button class='mi' data-g='" + i[0] + "' style='--c1:" + i[4] + "'>" +
+        "<span class='mic' style='color:" + i[4] + "'>" + ic(i[0]) + "</span>" +
+        "<div><b>" + i[1] + "</b><small>" + i[2] + "</small></div>" +
+        "<em>" + i[3] + "</em></button>"
+      ).join("")
+    ).join("");
+
+    $("#v").querySelectorAll(".mi").forEach(b => b.onclick = () => {
+      tab = b.dataset.g;
+      render();
+      window.scrollTo(0, 0);
+    });
+  }
+
+  /* Denemeler (Genel & Branş + Tahmini KPSS Puanı) */
+  function denChart(X, nt) {
+    const V = X.slice(-12), vs = V.map(nt), mn = Math.min(...vs), mx2 = Math.max(...vs);
+    const W = 300, H = 120, pd = 22, avg = vs.reduce((a, b) => a + b, 0) / vs.length;
+    const xx = i => pd + i * (W - 2 * pd) / Math.max(1, V.length - 1);
+    const yy = v => H - pd - (v - mn) / ((mx2 - mn) || 1) * (H - 2 * pd);
+
+    return "<svg viewBox='0 0 " + W + " " + H + "' style='width:100%'>" +
+      "<line x1='" + pd + "' x2='" + (W - pd) + "' y1='" + yy(avg) + "' y2='" + yy(avg) + "' stroke-dasharray='4 4' style='stroke:var(--mu)'/>" +
+      "<polyline points='" + vs.map((v, i) => xx(i) + "," + yy(v)).join(" ") + "' fill='none' stroke-width='3' stroke-linejoin='round' style='stroke:var(--ac)'/>" +
+      vs.map((v, i) =>
+        "<circle cx='" + xx(i) + "' cy='" + yy(v) + "' r='4' style='fill:var(--ac2)'/>" +
+        (V.length <= 8 || i === V.length - 1 ? "<text x='" + xx(i) + "' y='" + (yy(v) - 8) + "' text-anchor='middle' font-size='10' style='fill:var(--tx)'>" + f(v) + "</text>" : "")
+      ).join("") +
+      "<text x='" + pd + "' y='" + (H - 4) + "' font-size='9' style='fill:var(--mu)'>" + dm(V[0].date) + "</text>" +
+      "<text x='" + (W - pd) + "' y='" + (H - 4) + "' text-anchor='end' font-size='9' style='fill:var(--mu)'>" + dm(V[V.length - 1].date) + "</text>" +
+      "<text x='" + (W - pd) + "' y='" + (yy(avg) - 4) + "' text-anchor='end' font-size='9' style='fill:var(--mu)'>ort " + f(avg) + "</text>" +
+      "</svg>";
+  }
+
+  function denAnaliz() {
+    const G = srt(S.ex.filter(e => !e.tp || e.tp === "genel"));
+    if (!G.length) return "";
+    const dk = Object.keys(S.ders);
+    const rn = (e, k) => { const r = e.r[k] || [0, 0]; return r[0] - r[1] / 4; };
+    const nt = e => Object.keys(e.r || {}).reduce((s, k) => s + rn(e, k), 0);
+
+    const L = G[G.length - 1], P = G.length > 1 ? G[G.length - 2] : null;
+    const dif = P ? nt(L) - nt(P) : 0;
+    const avg = G.reduce((s, e) => s + nt(e), 0) / G.length;
+    const best = G.reduce((a, e) => nt(e) > nt(a) ? e : a, G[0]);
+
+    const rows = dk.filter(k => L.r[k]).map(k => {
+      const r = L.r[k] || [0, 0], n = rn(L, k);
+      const av = G.reduce((s, e) => s + rn(e, k), 0) / G.length;
+      const ac = r[0] + r[1] ? r[0] / (r[0] + r[1]) * 100 : 0;
+      return "<div class='row'><span>" + esc(k) + "</span><small>" + r[0] + "D " + r[1] + "Y " + (r[2] || 0) + "B · net <b>" + f(n) + "</b> " + (P ? ar(n, rn(P, k), true) : "") + " · ort " + f(av) + " · %" + Math.round(ac) + "</small></div>";
+    }).join("");
+
+    const ins = ["Ortalama net " + f(avg) + ", en yüksek " + f(nt(best)) + " (" + esc(best.name || dm(best.date)) + "), son deneme " + f(nt(L)) + "."];
+    if (P) ins.push("Son deneme öncekine göre " + (dif >= 0 ? "+" : "") + f(dif) + " net.");
+    if (L.p) ins.push("Son deneme puanın " + L.p + "; hedefin " + S.cfg.goal + (L.p < S.cfg.goal ? ", " + f(S.cfg.goal - L.p) + " puan kaldı." : ", hedefi geçtin!"));
+
+    return "<div class='c'><h2>Son deneme · " + esc(L.name || "Deneme") + " · " + dm(L.date) + "</h2>" +
+      "<div class='kp'><div><b class='ac'>" + f(nt(L)) + "</b><small>Net</small></div><div><b>" + (L.p || "–") + "</b><small>Puan</small></div><div><b>" + (P ? (dif >= 0 ? "+" : "") + f(dif) : "–") + "</b><small>Fark</small></div><div><b>" + f(avg) + "</b><small>Ortalama</small></div></div>" +
+      rows + "</div>" +
+      "<div class='c'><h2>Net gelişimi · son " + Math.min(12, G.length) + " deneme</h2>" + denChart(G, nt) + "</div>" +
+      "<div class='c'><h2>Yorumlar</h2>" + ins.map(t => "<p class='ins'>• " + t + "</p>").join("") + "</div>";
+  }
+
+  function bransAnaliz(K) {
+    const X = srt(S.ex.filter(e => e.tp === "brans" && e.bd === K));
+    if (!X.length) return "<div class='c'><div class='e'>" + esc(K) + " için henüz branş denemesi yok.</div></div>";
+    const rr = e => e.r[K] || [0, 0, 0], nt = e => rr(e)[0] - rr(e)[1] / 4;
+    const L = X[X.length - 1], P = X.length > 1 ? X[X.length - 2] : null;
+    const r = rr(L), q = r[0] + r[1] + (r[2] || 0);
+    const avg = X.reduce((s, e) => s + nt(e), 0) / X.length;
+    const acc = r[0] + r[1] ? r[0] / (r[0] + r[1]) * 100 : 0;
+
+    return "<div class='c'><h2>" + esc(K) + " · son branş · " + esc(L.name || "Branş") + " · " + dm(L.date) + "</h2>" +
+      "<div class='kp'><div><b class='ac'>" + f(nt(L)) + "</b><small>Net</small></div><div><b>" + q + "</b><small>Soru</small></div><div><b>%" + Math.round(acc) + "</b><small>Doğruluk</small></div><div><b>" + f(avg) + "</b><small>Ortalama</small></div></div>" +
+      "<div class='row'><span>Doğru / Yanlış / Boş</span><small>" + r[0] + " / " + r[1] + " / " + (r[2] || 0) + "</small></div>" +
+      (P ? "<small class='st'>Önceki branşa göre fark: " + (nt(L) - nt(P) >= 0 ? "+" : "") + f(nt(L) - nt(P)) + " net</small>" : "") +
+      "</div>" +
+      "<div class='c'><h2>" + esc(K) + " · net gelişimi</h2>" + denChart(X, nt) + "</div>";
+  }
+
+  function vDen() {
+    const dk = Object.keys(S.ders);
+    const G = srt(S.ex.filter(e => !e.tp || e.tp === "genel"));
+    const K = BK && dk.includes(BK) ? BK : (dk[0] || "Türkçe");
+    const Bz = srt(S.ex.filter(e => e.tp === "brans" && e.bd === K));
+    const dn = (e, k) => { const r = e.r[k] || [0, 0]; return r[0] - r[1] / 4; };
+    const nt = e => Object.keys(e.r || {}).reduce((s, k) => s + dn(e, k), 0);
+    const defQ = k => (k in DT ? DT[k] : 20);
+
+    const seg = "<div class='seg'>" +
+      "<button class='" + (DT2 === "genel" ? "on" : "") + "' data-m='genel'>Genel denemeler</button>" +
+      "<button class='" + (DT2 === "brans" ? "on" : "") + "' data-m='brans'>Branş denemeleri</button>" +
+      "</div>";
+
+    const inp = (id, v) => "<input type='number' inputmode='numeric' min='0' id='" + id + "' value='" + v + "'>";
+    let html = seg;
+
+    if (DT2 === "genel") {
+      const totalDef = dk.reduce((s, k) => s + defQ(k), 0);
+      const gform = "<div class='c'><h2>Yeni genel deneme · " + totalDef + " soru</h2>" +
+        "<label>Deneme adı</label><input id='en' placeholder='Örn. Genel Deneme 1'>" +
+        "<label>Tarih</label><input type='date' id='ed' value='" + ds(new Date()) + "'>" +
+        "<div class='er3'><span></span><small class='st'>Soru</small><small class='st'>Doğru</small><small class='st'>Yanlış</small></div>" +
+        dk.map((k, i) => "<div class='er3'><span>" + esc(k) + "<small class='st' id='eb" + i + "' style='display:block'></small></span>" + inp("t" + i, defQ(k)) + inp("d" + i, 0) + inp("y" + i, 0) + "</div>").join("") +
+        "<label>Puan (isteğe bağlı)</label><input type='number' step='0.01' id='epn' placeholder='Örn. 84.5'>" +
+        "<div class='pv' id='ep'></div>" +
+        "<button class='pb' id='es'>Kaydet</button>" +
+        "</div>";
+
+      const glist = "<div class='c'><h2>Genel denemeler</h2>" +
+        (G.length
+          ? [...G].reverse().map(e => {
+              const keys = Object.keys(e.r || {});
+              const tt = keys.reduce((a, k) => { const r = e.r[k] || [0, 0, 0]; return [a[0] + r[0], a[1] + r[1], a[2] + (r[2] || 0)]; }, [0, 0, 0]);
+              return "<div class='li'><div>" + esc(e.name || "Deneme") +
+                "<small>" + e.date + " · " + keys.map(k => k.slice(0, 3) + " " + f(dn(e, k))).join(" · ") + "</small>" +
+                "<small>" + (tt[0] + tt[1] + tt[2]) + " soru · " + tt[0] + "D " + tt[1] + "Y " + tt[2] + "B</small></div>" +
+                "<b class='ac'>" + f(nt(e)) + (e.p ? " · " + e.p + "p" : "") + "</b>" +
+                "<button class='x' data-i='" + e.id + "' title='Sil'>✕</button></div>";
+            }).join("")
+          : "<div class='e'>Kayıt yok.</div>") +
+        "</div>";
+
+      html += denAnaliz() + gform + glist;
+    } else {
+      const bform = "<div class='c'><h2>Yeni branş denemesi · " + esc(K) + "</h2>" +
+        "<label>Deneme adı</label><input id='en' placeholder='Örn. " + esc(K) + " Branş 1'>" +
+        "<label>Tarih</label><input type='date' id='ed' value='" + ds(new Date()) + "'>" +
+        "<label>Toplam soru</label>" + inp("t0", defQ(K)) +
+        "<div class='n3'><div><label>Doğru</label>" + inp("d0", 0) + "</div><div><label>Yanlış</label>" + inp("y0", 0) + "</div><div><label>Boş</label><input id='b0' disabled value='" + defQ(K) + "'></div></div>" +
+        "<div class='pv' id='ep'></div>" +
+        "<button class='pb' id='es'>Kaydet</button>" +
+        "</div>";
+
+      const blist = "<div class='c'><h2>" + esc(K) + " · branş denemeleri</h2>" +
+        (Bz.length
+          ? [...Bz].reverse().map(e => {
+              const r = e.r[K] || [0, 0, 0];
+              return "<div class='li'><div>" + esc(e.name || "Branş") + "<small>" + e.date + " · " + (r[0] + r[1] + (r[2] || 0)) + " soru · " + r[0] + "D " + r[1] + "Y " + (r[2] || 0) + "B</small></div>" +
+                "<b class='ac'>" + f(r[0] - r[1] / 4) + "</b>" +
+                "<button class='x' data-i='" + e.id + "' title='Sil'>✕</button></div>";
+            }).join("")
+          : "<div class='e'>Kayıt yok.</div>") +
+        "</div>";
+
+      html += "<div class='chips'>" + dk.map((k, idx) => "<button class='tb bch' data-k='" + esc(k) + "' style='" + (k === K ? ("border-color:" + dColor(k, idx) + ";color:" + dColor(k, idx)) : "") + "'>" + esc(k) + "</button>").join("") + "</div>" +
+        bransAnaliz(K) + bform + blist;
+    }
+
+    $("#v").innerHTML = html;
+    const v = $("#v"), g = i => Math.max(0, Math.floor(+$("#" + i).value || 0));
+    v.querySelectorAll(".seg button").forEach(b => b.onclick = () => { DT2 = b.dataset.m; vDen(); });
+    v.querySelectorAll(".bch").forEach(b => b.onclick = () => { BK = b.dataset.k; vDen(); });
+    v.querySelectorAll(".x").forEach(b => b.onclick = () => { S.ex = S.ex.filter(e => e.id !== b.dataset.i); save(); render(); });
+
+    if (DT2 === "genel") {
+      const pv = () => {
+        let n = 0, bb = 0, qq = 0;
+        dk.forEach((k, i) => {
+          const t = g("t" + i), d = g("d" + i), y = g("y" + i), b = t > 0 ? Math.max(0, t - d - y) : 0;
+          n += d - y / 4;
+          bb += b;
+          qq += d + y + b;
+          $("#eb" + i).textContent = "boş: " + b;
+        });
+        const estPuan = n > 0 ? Math.min(100, Math.max(40, 52 + n * 0.4)) : 0;
+        $("#ep").innerHTML = "Toplam soru " + qq + " · Boş " + bb + " · Net <b class='ac'>" + f(n) + "</b>" +
+          (estPuan ? "<br><small class='st'>Tahmini KPSS P3 Puanı: ~" + f(estPuan) + "</small>" : "");
+      };
+      pv();
+      dk.forEach((k, i) => ["t", "d", "y"].forEach(p => $("#" + p + i).oninput = pv));
+      $("#es").onclick = () => {
+        const r = {};
+        let z = 0;
+        dk.forEach((k, i) => {
+          const t = g("t" + i), d = g("d" + i), y = g("y" + i);
+          r[k] = [d, y, t > 0 ? Math.max(0, t - d - y) : 0];
+          z += d + y;
+        });
+        if (!z) return;
+        S.ex.push({
+          id: uid(),
+          date: $("#ed").value || ds(new Date()),
+          name: $("#en").value.trim(),
+          tp: "genel",
+          p: +$("#epn").value || 0,
+          r
+        });
+        save();
+        render();
+      };
+    } else {
+      const pv = () => {
+        const t = g("t0"), d = g("d0"), y = g("y0"), b = t > 0 ? Math.max(0, t - d - y) : 0;
+        $("#b0").value = b;
+        $("#ep").innerHTML = "Toplam soru " + (d + y + b) + " · Boş " + b + " · Net <b class='ac'>" + f(d - y / 4) + "</b>";
+      };
+      pv();
+      ["t0", "d0", "y0"].forEach(i => $("#" + i).oninput = pv);
+      $("#es").onclick = () => {
+        const t = g("t0"), d = g("d0"), y = g("y0");
+        if (d + y === 0) return;
+        S.ex.push({
+          id: uid(),
+          date: $("#ed").value || ds(new Date()),
+          name: $("#en").value.trim(),
+          tp: "brans",
+          bd: K,
+          p: 0,
+          r: { [K]: [d, y, t > 0 ? Math.max(0, t - d - y) : 0] }
+        });
+        save();
+        render();
+      };
+    }
+    if (EXN !== null && S.ex.length > EXN) window.scrollTo(0, 0);
+    EXN = S.ex.length;
+  }
+
+  /* Soru Bankaları */
+  function vBanka() {
+    const dk = Object.keys(S.ders);
+    $("#v").innerHTML = "<div class='c'><h2>Soru bankası ekle</h2>" +
+      "<label>Ders</label><select id='bd'>" + dk.map(k => "<option value='" + esc(k) + "'>" + esc(k) + "</option>").join("") + "</select>" +
+      "<label>Banka / yayın adı</label><input id='bn' placeholder='Örn. Benim Hocam'>" +
+      "<label>Toplam test sayısı</label><input type='number' inputmode='numeric' id='bt' value='60'>" +
+      "<div style='height:12px'></div><button class='pb' id='bs'>Ekle</button></div>" +
+      "<div class='c'><h2>Bankalarım</h2>" +
+      (S.bk.length
+        ? S.bk.map(b => {
+            const p = Math.min(100, b.done / b.total * 100);
+            return "<div class='bk'><div class='row'><span><b>" + esc(b.ders) + "</b> · " + esc(b.name) + "</span><b class='ac'>%" + Math.round(p) + "</b></div>" +
+              "<div class='bar'><i style='width:" + p + "%;background:linear-gradient(90deg,var(--ac),var(--ac2))'></i></div>" +
+              "<div class='row'><small>" + b.done + " / " + b.total + " test · " + (b.total - b.done) + " kaldı</small>" +
+              "<span class='hb' style='margin:0'><button class='tb bm' data-i='" + b.id + "' data-d='-1'>−</button><button class='tb bm' data-i='" + b.id + "' data-d='1'>+1 test</button><button class='x hx' data-i='" + b.id + "' title='Sil'>✕</button></span></div></div>";
+          }).join("")
+        : "<div class='e'>Henüz soru bankası yok.</div>") +
+      "</div>";
+
+    $("#bs").onclick = () => {
+      const name = $("#bn").value.trim(), total = Math.max(1, Math.floor(+$("#bt").value || 0));
+      if (!name) return;
+      S.bk.push({ id: uid(), ders: $("#bd").value, name, total, done: 0 });
+      save();
+      render();
+    };
+    const v = $("#v");
+    v.querySelectorAll(".bm").forEach(b => b.onclick = () => keep(() => {
+      const k = S.bk.find(x => x.id === b.dataset.i);
+      k.done = Math.max(0, Math.min(k.total, k.done + (+b.dataset.d)));
+      save();
+    }));
+    v.querySelectorAll(".hx").forEach(b => b.onclick = () => {
+      S.bk = S.bk.filter(x => x.id !== b.dataset.i);
+      save();
+      render();
+    });
+  }
+
+  /* Hata Defteri */
+  const HT = ["Bilgi eksikliği", "Dikkat hatası", "Süre yetmedi", "Karıştırdım", "Diğer"];
+  const b64 = b => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(b);
+  });
+
+  function shrink(file, m = 1200, q = 0.75) {
+    return new Promise((res, rej) => {
+      const u = URL.createObjectURL(file), im = new Image();
+      im.onload = () => {
+        const s = Math.min(1, m / Math.max(im.width, im.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(im.width * s);
+        c.height = Math.round(im.height * s);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(u);
+        c.toBlob(b => b ? res(b) : rej(new Error("Görsel küçültülemedi")), "image/jpeg", q);
+      };
+      im.onerror = rej;
+      im.src = u;
+    });
+  }
+
+  const upl = async f0 => AS ? (await AS.upload(await shrink(f0))).id : await b64(await shrink(f0, 900, 0.6));
+
+  function vHata() {
+    const dk = Object.keys(S.ders), pend = S.hd.filter(h => !h.ok).length;
+    const L = S.hd.filter(h => (!HF || h.ders === HF) && !(HO && h.ok)).sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+
+    $("#v").innerHTML = "<div class='c'><h2>Hata defterine ekle</h2>" +
+      "<label>Ders</label><select id='hs'>" + dk.map(k => "<option value='" + esc(k) + "'>" + esc(k) + "</option>").join("") + "</select>" +
+      "<label>Konu / Ünite</label><select id='hk'></select>" +
+      "<label>Hata türü</label><select id='ht'>" + HT.map(x => "<option>" + x + "</option>").join("") + "</select>" +
+      "<label>Soru / ne yanlış yaptım</label><textarea id='hq' style='min-height:80px'></textarea>" +
+      "<label>Doğru cevap / çözüm notu</label><textarea id='ha' style='min-height:80px'></textarea>" +
+      "<label>Soru fotoğrafı (isteğe bağlı)</label><input type='file' accept='image/*' id='hp'>" +
+      "<label>Çözüm fotoğrafı (isteğe bağlı)</label><input type='file' accept='image/*' id='hp2'>" +
+      "<div style='height:12px'></div><button class='pb' id='hv'>Deftere ekle</button></div>" +
+      "<div class='c'><h2>Defter · " + pend + " hata tekrar bekliyor</h2>" +
+      "<div class='ctl'><select id='hf'><option value=''>Tüm dersler</option>" + dk.map(k => "<option value='" + esc(k) + "'" + (k === HF ? " selected" : "") + ">" + esc(k) + "</option>").join("") + "</select>" +
+      "<label class='vi' style='border:0;padding:0;align-items:center;white-space:nowrap'><input type='checkbox' id='ho'" + (HO ? " checked" : "") + "><span>Sadece bekleyenler</span></label></div>" +
+      (L.length
+        ? L.map(h =>
+            "<div class='li' style='align-items:flex-start;flex-direction:column'><div style='width:100%'>" +
+            "<b>" + esc(h.konu) + "</b>" +
+            "<small>" + h.date + " · " + esc(h.ders) + " · " + esc(h.t) + (h.n ? " · " + h.n + " tekrar" : "") + (h.ok ? " · ✓ öğrenildi" : "") + "</small>" +
+            (h.q ? "<div class='hc'>" + esc(h.q) + "</div>" : "") +
+            (h.a ? "<div class='hc ok'>" + esc(h.a) + "</div>" : "") +
+            (h.img ? "<img src='" + (h.img.startsWith("data:") ? h.img : "/_blob/" + h.img) + "' alt='soru fotoğrafı' style='max-width:100%;border-radius:10px;margin-top:6px'>" : "") +
+            (h.img2 ? "<small class='st' style='display:block;margin-top:8px'>Çözüm</small><img src='" + (h.img2.startsWith("data:") ? h.img2 : "/_blob/" + h.img2) + "' alt='çözüm fotoğrafı' style='max-width:100%;border-radius:10px;margin-top:4px'>" : "") +
+            "</div><div class='hb'>" +
+            "<button class='tb hr' data-i='" + h.id + "'>Tekrar ettim</button>" +
+            "<button class='tb ht2' data-i='" + h.id + "'>" + (h.ok ? "Geri al" : "Öğrendim ✓") + "</button>" +
+            "<button class='tb hx' data-i='" + h.id + "'>Sil</button>" +
+            "</div></div>"
+          ).join("")
+        : "<div class='e'>Kayıt yok.</div>") +
+      "</div>";
+
+    const fill = () => {
+      const units = S.ders[$("#hs").value] || [];
+      $("#hk").innerHTML = units.length
+        ? units.map(k => "<option value='" + esc(k) + "'>" + esc(k) + "</option>").join("")
+        : "<option value='Genel'>Genel</option>";
+    };
+    fill();
+    $("#hs").onchange = fill;
+
+    $("#hv").onclick = async () => {
+      const q = $("#hq").value.trim(), a = $("#ha").value.trim();
+      const pf = $("#hp") && $("#hp").files[0], pf2 = $("#hp2") && $("#hp2").files[0];
+      if (!q && !a && !pf && !pf2) return;
+      let img = "", img2 = "";
+      if (pf) {
+        try {
+          $("#hv").textContent = "Yükleniyor…";
+          img = await upl(pf);
+        } catch (e) {
+          $("#hv").textContent = "Fotoğraf eklenemedi";
+          return;
+        }
+      }
+      if (pf2) {
+        try {
+          $("#hv").textContent = "Yükleniyor…";
+          img2 = await upl(pf2);
+        } catch (e) {
+          $("#hv").textContent = "Fotoğraf eklenemedi";
+          return;
+        }
+      }
+      S.hd.push({
+        id: uid(),
+        date: ds(new Date()),
+        ders: $("#hs").value,
+        konu: $("#hk").value || "Genel",
+        t: $("#ht").value,
+        q,
+        a,
+        img,
+        img2,
+        ok: 0,
+        n: 0
+      });
+      save();
+      render();
+    };
+
+    $("#hf").onchange = () => { HF = $("#hf").value; vHata(); };
+    $("#ho").onchange = () => { HO = $("#ho").checked; vHata(); };
+    const v = $("#v"), fh = b => S.hd.find(x => x.id === b.dataset.i);
+    v.querySelectorAll(".hr").forEach(b => b.onclick = () => keep(() => { const h = fh(b); h.n = (h.n || 0) + 1; save(); }));
+    v.querySelectorAll(".ht2").forEach(b => b.onclick = () => keep(() => { const h = fh(b); h.ok = h.ok ? 0 : 1; save(); }));
+    v.querySelectorAll(".hx").forEach(b => b.onclick = () => {
+      const h = fh(b);
+      if (h && AS) {
+        [h.img, h.img2].forEach(x => { if (x && !x.startsWith("data:")) AS.delete(x).catch(() => {}); });
+      }
+      S.hd = S.hd.filter(x => x.id !== b.dataset.i);
+      save();
+      render();
+    });
+  }
+
+  /* Kayıtlar */
+  function vKayit() {
+    const L = [...S.logs].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+    $("#v").innerHTML = "<div class='c'><h2>Kayıtlar (" + L.length + ")</h2>" +
+      (L.length
+        ? L.map(l =>
+            "<div class='li'><div>" + esc(l.konu) + "<small>" + l.date + " · " + esc(l.ders) + (l.h ? " · " + l.h + " sa" : "") + "</small></div>" +
+            "<div style='text-align:right'><span class='ok'>" + l.d + "D</span> <span class='no'>" + l.y + "Y</span> <span>" + l.b + "B</span><small>net " + f(net(l)) + "</small></div>" +
+            "<button class='x' data-i='" + l.id + "' title='Sil'>✕</button></div>"
+          ).join("")
+        : "<div class='e'>Henüz kayıt yok. Ekle sekmesinden ilk kaydını gir.</div>") +
+      "</div>";
+
+    $("#v").querySelectorAll(".x").forEach(b => b.onclick = () => {
+      S.logs = S.logs.filter(l => l.id !== b.dataset.i);
+      save();
+      render();
+    });
+  }
+
+  /* Bulut Senkronu & Tam Ekran Uygulama Kurulum Rehberi */
+  function vSync() {
+    const t = ($("#st") || {}).textContent || "";
+    const githubBox = SA
+      ? "<div class='c'><h2>Bulut Senkronu (GitHub Gist)</h2>" +
+        (lsGet(GT)
+          ? "<small class='st' id='gs'>Bağlı</small><div class='ctl'><button class='tb' id='gn'>Şimdi senkronla</button><button class='tb' id='gx'>Bağlantıyı kaldır</button></div>"
+          : "<small class='st' style='display:block;margin-bottom:8px'>Telefon ve bilgisayar aynı veriyi görsün diye: 1) github.com’da ücretsiz hesap aç. 2) <a href='https://github.com/settings/tokens/new?scopes=gist&description=KPSS' target='_blank' style='color:var(--ac)'>Bu bağlantıdan</a> token oluştur (yalnızca gist izni). 3) Token’ı aşağıya yapıştır.</small>" +
+            "<input id='gt' placeholder='ghp_...' autocapitalize='off' autocomplete='off'><div style='height:10px'></div><button class='pb' id='gc'>Bağlan</button><small class='st' id='gs'></small>") +
+        "</div>" +
+        "<div class='c'><h2>JSON Yedekleme</h2>" +
+        "<small class='st'>Tüm verilerini ve özel ünite listelerini dosya olarak indir veya başka cihazdan yükle.</small>" +
+        "<div class='ctl'><button class='tb' id='bx'>Yedek indir (.json)</button><button class='tb' id='bi'>Yedeği yükle</button></div>" +
+        "<div class='st' id='bk-msg' style='margin-top:6px'></div>" +
+        "<input type='file' id='bf' accept='.json,application/json' style='display:none'></div>"
+      : "";
+
+    $("#v").innerHTML = "<div class='c hero'>" +
+      "<h2>📱 Gemini Çubukları Olmadan Tam Ekran Kurulum</h2>" +
+      "<p class='ins'>Bu sayfa Gemini içinde açıldığında üstte ve altta Gemini çubukları görünür. Telefonunda <b>kendi ikonuyla ve tamamen tam ekran</b> uygulama gibi kullanmak için:</p>" +
+      "<p class='ins'><b>1.</b> Aşağıdaki <b>\"Uygulama Dosyasını İndir (.html)\"</b> butonuna bas.</p>" +
+      "<p class='ins'><b>2.</b> İndirdiğin <code>KPSS-Soru-Takip.html</code> dosyasını ücretsiz ve reklamsız bir yere yükle: <b>tiiny.host</b>, <b>app.netlify.com/drop</b> veya <b>GitHub Pages</b>. Sana özel bir link verecek.</p>" +
+      "<p class='ins'><b>3.</b> O linki iPhone’da <b>Safari</b> (Android’de <b>Chrome</b>) ile açıp <b>Paylaş (↑) → \"Ana Ekrana Ekle\"</b> seçeneğine dokun. Artık hiçbir Gemini veya tarayıcı çubuğu olmadan bağımsız uygulama olarak açılır!</p>" +
+      "<div style='height:8px'></div>" +
+      "<button class='pb' id='dl-app'>Uygulama Dosyasını İndir (.html)</button>" +
+      "</div>" +
+      "<div class='c'><h2>Senkron Durumu</h2>" +
+      "<p class='ins'>" + (SA
+        ? (lsGet(GT) ? "GitHub senkronu bağlı. Aynı hesapla bağlanan cihazlarda veriler otomatik eşitlenir." : "Henüz bulut bağlanmadı: veriler bu cihazda saklanıyor.")
+        : "Bulut bağlantısı aktif.") + "</p>" +
+      "<small class='st'>" + esc(t) + "</small></div>" +
+      githubBox;
+
+    if ($("#dl-app")) {
+      $("#dl-app").onclick = () => {
+        const htmlSrc = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([htmlSrc], { type: "text/html;charset=utf-8" }));
+        a.download = "KPSS-Soru-Takip.html";
+        a.click();
+      };
+    }
+
+    if (SA) {
+      if ($("#bx")) {
+        $("#bx").onclick = () => {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" }));
+          a.download = "kpss-yedek-" + ds(new Date()) + ".json";
+          a.click();
+        };
+      }
+      if ($("#bi")) $("#bi").onclick = () => $("#bf").click();
+      if ($("#bf")) {
+        $("#bf").onchange = e => {
+          const g = e.target.files[0];
+          if (!g) return;
+          g.text().then(txt => {
+            try {
+              S = norm(JSON.parse(txt));
+              S.ts = Date.now();
+              save();
+              render();
+            } catch (x) {
+              if ($("#bk-msg")) $("#bk-msg").textContent = "Geçersiz yedek dosyası.";
+            }
+          });
+        };
+      }
+      if ($("#gc")) {
+        $("#gc").onclick = () => {
+          const tok = $("#gt").value.trim();
+          if (!tok) return;
+          lsSet(GT, tok);
+          lsSet(GI, null);
+          lsSet(GS, null);
+          render();
+          gsync();
+        };
+      }
+      if ($("#gn")) $("#gn").onclick = gsync;
+      if ($("#gx")) {
+        $("#gx").onclick = () => {
+          lsSet(GT, null);
+          lsSet(GI, null);
+          lsSet(GS, null);
+          status("Bu cihaz");
+          render();
+        };
+      }
+    }
+  }
+
+  /* ==========================================================================
+     13. PWA İKON OLUŞTURMA, TEMA VE UYGULAMA BAŞLATMA
+     ========================================================================== */
+  function initPWA() {
+    try {
+      const c = document.createElement("canvas");
+      c.width = 512;
+      c.height = 512;
+      const ctx = c.getContext("2d");
+      if (!ctx) return;
+
+      ctx.fillStyle = "#0a0f1f";
+      ctx.fillRect(0, 0, 512, 512);
+
+      ctx.beginPath();
+      ctx.arc(256, 224, 132, 0, Math.PI * 2);
+      ctx.lineWidth = 28;
+      ctx.strokeStyle = "#1d2746";
+      ctx.stroke();
+
+      const grd = ctx.createLinearGradient(110, 90, 400, 360);
+      grd.addColorStop(0, "#22e3d0");
+      grd.addColorStop(1, "#9b6bff");
+      ctx.beginPath();
+      ctx.arc(256, 224, 132, -Math.PI / 2, Math.PI * 1.15);
+      ctx.lineWidth = 28;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = grd;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(256, 224, 26, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      ctx.fillStyle = "#e8ecf8";
+      ctx.font = "bold 54px -apple-system, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("KPSS", 256, 438);
+
+      const iconUrl = c.toDataURL("image/png");
+      const iconEl = $("#app-icon");
+      if (iconEl) iconEl.href = iconUrl;
+
+      const manifest = {
+        name: "KPSS Soru Takip",
+        short_name: "KPSS Takip",
+        start_url: ".",
+        display: "standalone",
+        background_color: "#0a0f1f",
+        theme_color: "#0a0f1f",
+        icons: [{ src: iconUrl, sizes: "512x512", type: "image/png" }]
+      };
+      const mUrl = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" }));
+      const mEl = $("#app-manifest");
+      if (mEl) mEl.href = mUrl;
+    } catch (e) {}
+  }
+
+  window.onerror = function (msg) {
+    const v = document.getElementById("v");
+    if (v && !v.innerHTML.trim()) {
+      v.innerHTML = "<div class='c'>Uygulama yüklenirken hata oluştu: " + esc(msg) + "</div>";
+    }
+  };
+
+  try {
+    $("#cl0").onclick = () => {
+      tab = "sync";
+      render();
+      window.scrollTo(0, 0);
+    };
+
+    $("#th").onclick = () => {
+      const r = document.documentElement;
+      const dark = getComputedStyle(r).colorScheme === "dark";
+      r.setAttribute("data-theme", dark ? "light" : "dark");
+    };
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) gsync();
+    });
+    window.addEventListener("focus", gsync);
+
+    initPWA();
+    render();
+    status(lsGet(GT) ? "Senkron hazır" : "Bu cihaz");
+    cloud();
+    setTimeout(gsync, 300);
+  } catch (err) {
+    const v = document.getElementById("v");
+    if (v) {
+      v.innerHTML = "<div class='c'>Hata: " + esc(err && err.message ? err.message : err) + "</div>";
+    }
+  }
+})();
+</script>
+</body>
+</html>
